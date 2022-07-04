@@ -1,0 +1,15 @@
+.card {
+    background-color:grey;
+    border: 10px solid black;
+    margin: 10px;
+    /* flex: 1; */
+    display:inline-block; /* makes huge difference! */
+}
+
+.type {
+    color:white;
+}
+
+.name {
+    color:white;
+}

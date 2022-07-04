@@ -12,6 +12,7 @@ export default class ResourcesList extends React.Component {
 
         this.state = {
             URL: 'https://database-streamline-server.herokuapp.com/resources',
+            // URL: 'http://localhost:3001/resources',
             resources: [],
             name: ''
         }

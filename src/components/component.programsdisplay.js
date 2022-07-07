@@ -62,6 +62,16 @@ export default class ProgramsDisplay extends React.Component {
         return (
             <ul>
                 {this.loadPrograms()}
+                <li className='card'
+                    id='form'>
+                    <form onClick={this.onSubmit}>
+                        <input type='text'></input>
+                        <input type='text'></input>
+                        <input type='text'></input>
+                        <input type='text'></input>
+                        <input type='submit'></input>
+                    </form>
+                </li>
             </ul>
         );
     }

@@ -11,5 +11,9 @@
 }
 
 .name {
-    color:white;
+    color:rgb(21, 0, 255);
+}
+
+input {
+    display: block;
 }

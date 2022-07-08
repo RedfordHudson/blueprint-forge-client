@@ -68,7 +68,7 @@ class Blueprint extends Component {
     }
 
     addDeleteButton(index) {
-        if (!index || index == this.state.blueprint.nodes.length-1) {return;}
+        if (!index || index === this.state.blueprint.nodes.length-1) {return;}
         return <button className='delete'
             onClick={this.deleteObject}>Delete</button>
     }
@@ -149,7 +149,6 @@ class Blueprint extends Component {
         let blueprint = {...this.state.blueprint};
         blueprint.nodes[this.getIndex(e)].function = e.target.value;
         this.setState({blueprint:blueprint})
-
     }
 
     getEdgeCoordinates(source,sink) {

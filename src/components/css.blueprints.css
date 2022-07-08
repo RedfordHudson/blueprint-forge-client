@@ -16,7 +16,7 @@
     height:70vh;
 }
 
-#objects {
+.object_series {
     border:10px solid black;
     background-color: aqua;
     display:flex;
@@ -24,7 +24,7 @@
     /* justify-content:space-between; */
 }
 
-#objects > li {
+.object_series > li {
     z-index:3;
 }
 
@@ -55,10 +55,11 @@ input {
 
 .function {
     position:absolute;
+    z-index: 4;
 }
 
 svg {
-    z-index:1
+    z-index:1;
 }
 
 .chain:hover, .delete:hover, .save:hover {

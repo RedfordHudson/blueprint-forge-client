@@ -1,7 +1,8 @@
 // import './App.css';
 // import ProgramsDisplay from './components/component.programsdisplay';
 
-import Blueprint from './components/component.blueprint';
+// import Blueprint from './components/component.blueprint';
+import Blueprint from './components/component.hierarchic.blueprint';
 
 function App() {
   return (

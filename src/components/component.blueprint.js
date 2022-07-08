@@ -72,7 +72,7 @@ class Blueprint extends Component {
 
         if (!index) {return <div>{chainButton}</div>}
         else if (index === this.state.blueprint.nodes.length-1) {return <div/>;}
-        {return <div>{chainButton}{deleteButton}</div>}
+        else {return <div>{chainButton}{deleteButton}</div>}
     }
 
     saveBlueprint() {

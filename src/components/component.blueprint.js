@@ -120,7 +120,7 @@ class Blueprint extends Component {
 
         return Array.from({length:nodes.length-1},(_,i)=>i+1).map(i => {
             
-            if (!children.length) {return;}
+            if (!children.length) {return [];}
 
             let coords = this.getEdgeCoordinates(children[i-1],children[i]);
 

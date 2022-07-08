@@ -9,16 +9,26 @@ class Blueprint extends Component {
     
         this.componentDidMount = this.componentDidMount.bind(this);
         this.getBlueprint = this.getBlueprint.bind(this);
+        
+        this.saveBlueprint = this.saveBlueprint.bind(this);
+
+        this.addDeleteButton = this.addDeleteButton.bind(this);
+        this.editObject = this.editObject.bind(this);
+        this.chainObject = this.chainObject.bind(this);
+        this.deleteObject = this.deleteObject.bind(this);
+
+        this.loadFunctions = this.loadFunctions.bind(this);
+        this.loadFunction = this.loadFunction.bind(this);
+        this.editFunction = this.editFunction.bind(this);
+
         this.getEdgeCoordinates = this.getEdgeCoordinates.bind(this);
         this.getPathString = this.getPathString.bind(this);
-        this.loadFunction = this.loadFunction.bind(this);
-        this.loadFunctions = this.loadFunctions.bind(this);
         this.loadEdges = this.loadEdges.bind(this);
     
         this.nodesRef = React.createRef();
 
         this.state = {
-            URL:'https://database-streamline-server.herokuapp.com/blueprints',
+            URL:'https://database-streamline-server.herokuapp.com/blueprints/',
             blueprint:'',
         }
     }
@@ -41,11 +51,64 @@ class Blueprint extends Component {
     loadObjects() {
         if (!this.state.blueprint.nodes) {return;}
 
-        return this.state.blueprint.nodes.map(node => {
+        return this.state.blueprint.nodes.map( (node,index) => {
             return <li className='object'
-                key={node.object+' object'}
-                >{node.object}</li>
+                key={'object_'+index}
+                id={'object_'+index}>
+                    <input type='text'
+                        value={node.object}
+                        onChange={this.editObject} />
+                    <div>
+                        <button className='chain'
+                            onClick={this.chainObject}>Chain</button>
+                        {this.addDeleteButton(index)}
+                    </div>
+                </li>
         })
+    }
+
+    addDeleteButton(index) {
+        if (!index || index == this.state.blueprint.nodes.length-1) {return;}
+        return <button className='delete'
+            onClick={this.deleteObject}>Delete</button>
+    }
+
+    saveBlueprint() {
+        const id = this.state.blueprint._id;
+        axios.patch(this.state.URL+'update/'+id,this.state.blueprint);
+    }
+
+    getIndex(e) {
+        const id = e.target.parentElement.id;
+        const indexFinder = /(object|function)_([0-9]+)/g;
+        const index = indexFinder.exec(id)[2];
+        return parseInt(index);
+    }
+
+    editObject(e) {
+        let blueprint = {...this.state.blueprint};
+        blueprint.nodes[this.getIndex(e)].object = e.target.value;
+        this.setState({blueprint:blueprint})
+
+    }
+
+    chainObject(e) {
+        const node = {
+            object:'',
+            function:''
+        }
+
+        let blueprint = {...this.state.blueprint};
+        blueprint.nodes.splice(this.getIndex(e)+1,0,node);
+        this.setState({blueprint:blueprint})
+
+    }
+
+    deleteObject(e) {
+        let blueprint = {...this.state.blueprint};
+        blueprint.nodes.splice(this.getIndex(e),1);
+        
+        this.setState({blueprint:blueprint})
     }
 
     loadFunctions() {
@@ -66,9 +129,7 @@ class Blueprint extends Component {
     }
 
     loadFunction(node,coords) {
-        if (!node) {return;}
-
-        console.log(node.object +' -> '+coords);
+        if (!node || !coords) {return;}
 
         let xPos = (coords[0]+coords[2])/2
         let yPos = (coords[1]+coords[3])/2;
@@ -79,10 +140,21 @@ class Blueprint extends Component {
                 left:xPos,
                 top:yPos
             }}
-            >{node.function}</li>
+            ><input type='text'
+            value={node.function}
+            onChange={this.editFunction} /></li>
+    }
+
+    editFunction(e) {
+        let blueprint = {...this.state.blueprint};
+        blueprint.nodes[this.getIndex(e)].function = e.target.value;
+        this.setState({blueprint:blueprint})
+
     }
 
     getEdgeCoordinates(source,sink) {
+        if (!sink) {return;}
+
         const x1 = source.offsetLeft + source.clientWidth/2;
         const y1 = source.offsetTop + source.clientHeight/2;
         
@@ -112,20 +184,24 @@ class Blueprint extends Component {
 
     render() { 
         return ( 
-            <div>
+            <div id='component'>
                 <h1>Blueprint: {this.state.blueprint.name}</h1>
                 <div id='container'>
                     <div id='nodes'
                         ref={this.nodesRef}>
-                        <ul id='objects'>{this.loadObjects()}</ul>
+                        <ul id='objects'
+                            style={{justifyContent:'space-around'}}
+                            >{this.loadObjects()}</ul>
                         <ul id='functions'>{this.loadFunctions()}</ul>
                     </div>
                     <svg>
-                        <path stroke='red'
-                            stroke_width='10'
+                        <path stroke='black'
+                            stroke_width='1'
                             d={this.loadEdges()} />
                     </svg>
                 </div>
+                <button className='save'
+                    onClick={this.saveBlueprint}>Save</button>
             </div>
         );
     }

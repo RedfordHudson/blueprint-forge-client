@@ -12,7 +12,7 @@ class Blueprint extends Component {
         
         this.saveBlueprint = this.saveBlueprint.bind(this);
 
-        this.addDeleteButton = this.addDeleteButton.bind(this);
+        this.addButtons = this.addButtons.bind(this);
         this.editObject = this.editObject.bind(this);
         this.chainObject = this.chainObject.bind(this);
         this.deleteObject = this.deleteObject.bind(this);
@@ -58,19 +58,21 @@ class Blueprint extends Component {
                     <input type='text'
                         value={node.object}
                         onChange={this.editObject} />
-                    <div>
-                        <button className='chain'
-                            onClick={this.chainObject}>Chain</button>
-                        {this.addDeleteButton(index)}
-                    </div>
+                    {this.addButtons(index)}
                 </li>
         })
     }
 
-    addDeleteButton(index) {
-        if (!index || index === this.state.blueprint.nodes.length-1) {return;}
-        return <button className='delete'
-            onClick={this.deleteObject}>Delete</button>
+    addButtons(index) {
+        const chainButton = <button className='chain'
+            onClick={this.chainObject}>Chain</button>
+        const deleteButton = <button className='delete'
+            onClick={this.deleteObject}>Delete</button>;
+
+
+        if (!index) {return <div>{chainButton}</div>}
+        else if (index === this.state.blueprint.nodes.length-1) {return <div/>;}
+        {return <div>{chainButton}{deleteButton}</div>}
     }
 
     saveBlueprint() {
@@ -78,8 +80,15 @@ class Blueprint extends Component {
         axios.patch(this.state.URL+'update/'+id,this.state.blueprint);
     }
 
-    getIndex(e) {
-        const id = e.target.parentElement.id;
+    getIndex(e,subElement=false) {
+        let id = e.target.parentElement;
+
+        if (subElement) {
+            id = id.parentElement.id;
+        } else {
+            id = id.id;
+        }
+
         const indexFinder = /(object|function)_([0-9]+)/g;
         const index = indexFinder.exec(id)[2];
         return parseInt(index);
@@ -89,7 +98,6 @@ class Blueprint extends Component {
         let blueprint = {...this.state.blueprint};
         blueprint.nodes[this.getIndex(e)].object = e.target.value;
         this.setState({blueprint:blueprint})
-
     }
 
     chainObject(e) {
@@ -99,16 +107,18 @@ class Blueprint extends Component {
         }
 
         let blueprint = {...this.state.blueprint};
-        blueprint.nodes.splice(this.getIndex(e)+1,0,node);
-        this.setState({blueprint:blueprint})
-
+        blueprint.nodes.splice(this.getIndex(e,true)+1,0,node);
+        this.setState({blueprint:blueprint}, function() {
+            this.setState({blueprint:blueprint})
+        })
     }
 
     deleteObject(e) {
         let blueprint = {...this.state.blueprint};
-        blueprint.nodes.splice(this.getIndex(e),1);
-        
-        this.setState({blueprint:blueprint})
+        blueprint.nodes.splice(this.getIndex(e,true),1);
+        this.setState({blueprint:blueprint}, function() {
+            this.setState({blueprint:blueprint})
+        })
     }
 
     loadFunctions() {
@@ -117,25 +127,24 @@ class Blueprint extends Component {
         const nodes = this.state.blueprint.nodes;
         const children = this.nodesRef.current.childNodes[0].childNodes;
 
-
         return Array.from({length:nodes.length-1},(_,i)=>i+1).map(i => {
-            
             if (!children.length) {return [];}
 
             let coords = this.getEdgeCoordinates(children[i-1],children[i]);
 
-            return this.loadFunction(nodes[i],coords);
+            return this.loadFunction(nodes[i],coords,i);
         });
     }
 
-    loadFunction(node,coords) {
+    loadFunction(node,coords,index) {
         if (!node || !coords) {return;}
 
         let xPos = (coords[0]+coords[2])/2
         let yPos = (coords[1]+coords[3])/2;
 
         return <li className='function'
-            key={node.object+' function'}
+            key={'function_'+index}
+            id={'function_'+index}
             style={{
                 left:xPos,
                 top:yPos
@@ -184,6 +193,8 @@ class Blueprint extends Component {
     render() { 
         return ( 
             <div id='component'>
+                <button className='save'
+                    onClick={this.saveBlueprint}>Save</button>
                 <h1>Blueprint: {this.state.blueprint.name}</h1>
                 <div id='container'>
                     <div id='nodes'
@@ -199,8 +210,6 @@ class Blueprint extends Component {
                             d={this.loadEdges()} />
                     </svg>
                 </div>
-                <button className='save'
-                    onClick={this.saveBlueprint}>Save</button>
             </div>
         );
     }

@@ -1,39 +1,40 @@
 #component {
-    /* display:flex;
-    flex-direction: column;
-    justify-content:center; */
-    align-items:center;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    /* align-items:center; */
     background-color: grey;
 }
 
 #container {
     position:relative;
-    /* border: 5px solid green; */
-    height:300px;
-    margin:200px;
 }
 
 #nodes > ul, svg {
     position:absolute;
-    width:600px;
-    height:400px;
+    width:90vw;
+    height:70vh;
 }
 
 #objects {
     border:10px solid black;
-    display:flex;
-    /* justify-content:space-between; */
     background-color: aqua;
+    display:flex;
     align-items:center;
+    /* justify-content:space-between; */
 }
 
 #objects > li {
-    height:100px;
-    z-index:3
+    z-index:3;
 }
 
 li { 
-    z-index:2
+    z-index:2;
+    background-color: grey;
+    padding:0px;
+    border:5px solid black;
+    font-size:20px;
+    height:100px;
 }
 
 ul {
@@ -48,31 +49,24 @@ input {
     width:70px;
 }
 
-.object {
-    padding:0px;
-    border:5px solid black;
-    font-size:20px;
-}
-
 .object:hover, .function:hover {
     border:10px solid black;
 }
 
 .function {
     position:absolute;
-    height:100px;
-    border:2px solid purple;
 }
 
 svg {
-    /* border:5px solid blue; */
+    z-index:1
 }
 
-.chain:hover, .delete:hover {
+.chain:hover, .delete:hover, .save:hover {
     color:red;
 }
 
 .save {
     margin:auto;
     margin:0 500px 0;
+    z-index:100;
 }

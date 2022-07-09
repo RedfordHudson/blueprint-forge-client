@@ -34,7 +34,6 @@ class Blueprint extends Component {
         this.state = {
             URL:'https://database-streamline-server.herokuapp.com/blueprints/',
             blueprint:'',
-            // path:''
         }
     }
 
@@ -342,6 +341,60 @@ class Blueprint extends Component {
         return pathString;
     }
 
+    tryFunctionBranch(nodes) {
+        if (!nodes || !this.nodesRef.current || !this.nodesRef.current.childNodes ||
+            !this.nodesRef.current.childNodes.length ||
+            !this.getReference([]) ) {return '';}
+        
+        try {
+            return this.loadFunctionBranch(nodes,'')
+        } catch (err) {
+            console.log('##ERROR: '+err)
+        }
+    }
+
+    loadFunctionBranch(nodes, identifier) {
+        let reference = '';
+        const indices = identifier.split('_').map(i => parseInt(i)).filter(s => !isNaN(s));
+
+        const functionJSX = Array.from({length:nodes.length-1},(_,i)=>i+1).map(i => {
+            if (typeof nodes[i-1].object == 'undefined') { // source is Array -> conjunction
+                return nodes[i-1].map( (_,index) => {
+                    return [];
+                })
+
+            } else if (typeof nodes[i].object == 'undefined') { // sink is Array -> disjunction
+                return nodes[i].map( (branch,index) => {
+
+                    reference = this.getReference(indices);
+                    const newIndices = indices.concat([i,index]);
+
+                    // disjunction -> outgoing edges
+                    const subReference = this.getReference(newIndices);
+                    
+                    const source = reference[i-1];
+                    const sink = subReference[0]; // first object in sub-series
+                    let coords = this.getEdgeCoordinates(source,sink);
+                    
+                    return <div
+                        key={'function_div'+identifier}
+                        id={'function_div'+identifier}>
+                        {/* outgoing edge */}
+                        {this.loadFunction(nodes[i][index][0],coords,identifier+'_0')}
+                        {/* sub-series */}
+                        {this.loadFunctionBranch(branch,subReference,identifier)}
+                    </div>
+                })
+            } else { // both are Nodes
+                reference = this.getReference(indices);
+                let coords = this.getEdgeCoordinates(reference[i-1],reference[i]);
+                return this.loadFunction(nodes[i],coords,identifier+'_'+i);
+            }
+        });
+
+        return functionJSX;
+    }
+
     loadFunctionBranch(nodes, reference='', prefix='') {
         if (!this.nodesRef.current || !nodes ) {return;}
 
@@ -425,7 +478,7 @@ class Blueprint extends Component {
                     <div id='nodes'
                         ref={this.nodesRef}>
                         {this.loadObjectBranch(this.state.blueprint.nodes,'')}
-                        {/* <ul id='functions'>{this.loadFunctionBranch(this.state.blueprint.nodes)}</ul> */}
+                        <ul id='functions'>{this.tryFunctionBranch(this.state.blueprint.nodes)}</ul>
                     </div>
                     <svg>
                         <path 

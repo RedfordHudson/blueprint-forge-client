@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import './css.blueprints.css';
+import './css.linear.blueprint.css';
 
 class Blueprint extends Component {
     
@@ -35,6 +35,8 @@ class Blueprint extends Component {
 
     componentDidMount() {
         this.getBlueprint();
+
+        console.log('finished mounting')
     }
 
     getBlueprint() {
@@ -48,19 +50,36 @@ class Blueprint extends Component {
             })
     }
 
-    loadObjects() {
-        if (!this.state.blueprint.nodes) {return;}
+    loadObjects(nodes) {
+        if (!nodes) {return;}
 
-        return this.state.blueprint.nodes.map( (node,index) => {
-            return <li className='object'
-                key={'object_'+index}
-                id={'object_'+index}>
-                    <input type='text'
-                        value={node.object}
-                        onChange={this.editObject} />
-                    {this.addButtons(index)}
-                </li>
-        })
+        const objectsJSX = <ul id='objects'
+            style={{justifyContent:'space-around'}}>
+            {
+                this.state.blueprint.nodes.map( (node,index) => {
+                    return <li className='object'
+                        key={'object_'+index}
+                        id={'object_'+index}>
+                            <input type='text'
+                                value={node.object}
+                                onChange={this.editObject} />
+                            {this.addButtons(index)}
+                        </li>
+                })
+            }
+        </ul>
+
+        console.log('finished calculating objects')
+
+        return objectsJSX;
+    }
+
+    componentWillUnmount() {
+        console.log('will unmount...')
+    }
+
+    componentDidUpdate() {
+        console.log('finished updating')
     }
 
     addButtons(index) {
@@ -175,8 +194,17 @@ class Blueprint extends Component {
     getPathString(coords) {
         return 'M'+coords[0]+' '+coords[1]+' L'+coords[2]+' '+coords[3]+' ';}
 
-    loadEdges() {
-        if (!this.nodesRef.current) {return ''}
+    loadEdges(nodes) {
+        console.log('loading edges...')
+
+        console.log(nodes)
+
+        if (!this.nodesRef.current || !this.nodesRef.current.childNodes ||
+            !this.nodesRef.current.childNodes.length) {return ''}
+
+        // console.log(this.nodesRef)
+        // console.log(this.nodesRef.current)
+        // console.log(this.nodesRef.current.childNodes)
 
         const children = this.nodesRef.current.childNodes[0].childNodes;
 
@@ -186,6 +214,8 @@ class Blueprint extends Component {
             let coordinates = this.getEdgeCoordinates(children[i-1],children[i]);
             pathString += this.getPathString(coordinates);
         }
+
+        console.log('pathString: '+pathString+' <--')
 
         return pathString;
     }
@@ -199,15 +229,13 @@ class Blueprint extends Component {
                 <div id='container'>
                     <div id='nodes'
                         ref={this.nodesRef}>
-                        <ul id='objects'
-                            style={{justifyContent:'space-around'}}
-                            >{this.loadObjects()}</ul>
-                        <ul id='functions'>{this.loadFunctions()}</ul>
+                        {this.loadObjects(this.state.blueprint.nodes)}
+                        {/* <ul id='functions'>{this.loadFunctions()}</ul> */}
                     </div>
                     <svg>
                         <path stroke='black'
                             stroke_width='1'
-                            d={this.loadEdges()} />
+                            d={this.loadEdges(this.state.blueprint.nodes)} />
                     </svg>
                 </div>
             </div>

@@ -15,7 +15,7 @@ class Blueprint extends Component {
         this.addButtons = this.addButtons.bind(this);
         this.editObject = this.editObject.bind(this);
         this.chainObject = this.chainObject.bind(this);
-        this.branchObject = this.branchObject.bind(this);
+        // this.branchObject = this.branchObject.bind(this);
         this.deleteObject = this.deleteObject.bind(this);
 
         this.getEdgeCoordinates = this.getEdgeCoordinates.bind(this);
@@ -25,21 +25,23 @@ class Blueprint extends Component {
         this.tryPath = this.tryPath.bind(this);
         this.getPath = this.getPath.bind(this);
 
-        this.loadFunctionBranch = this.loadFunctionBranch.bind(this);
+        this.loadFunctions = this.loadFunctions.bind(this);
+        // this.loadFunctionBranch = this.loadFunctionBranch.bind(this);
         this.loadFunction = this.loadFunction.bind(this);
         this.editFunction = this.editFunction.bind(this);
-        
+    
         this.nodesRef = React.createRef();
 
         this.state = {
             URL:'https://database-streamline-server.herokuapp.com/blueprints/',
             blueprint:'',
-            // path:''
         }
     }
 
     componentDidMount() {
         this.getBlueprint();
+
+        console.log('finished mounting')
     }
 
     getBlueprint() {
@@ -48,14 +50,9 @@ class Blueprint extends Component {
         axios.get(this.state.URL)
             .then(blueprints => {
                 this.setState({
-                    blueprint:blueprints.data[1]
+                    blueprint:blueprints.data[0]
                 })
             })
-    }
-
-    saveBlueprint() {
-        const id = this.state.blueprint._id;
-        axios.patch(this.state.URL+'update/'+id,this.state.blueprint);
     }
 
     loadObjectBranch(nodes,prefix) {
@@ -91,8 +88,17 @@ class Blueprint extends Component {
             }
         </ul>
 
+        console.log('finished calculating objects')
         
         return objectsJSX;
+    }
+
+    componentWillUnmount() {
+        console.log('will unmount...')
+    }
+
+    componentDidUpdate() {
+        console.log('finished updating')
     }
 
     addButtons(identifier,series) {
@@ -124,6 +130,11 @@ class Blueprint extends Component {
         else {return <div>{chainButton}{branchButton}{deleteButton}</div>}
     }
 
+    saveBlueprint() {
+        const id = this.state.blueprint._id;
+        axios.patch(this.state.URL+'update/'+id,this.state.blueprint);
+    }
+
     getIndices(e,subElement=false) {
         let id = e.target.parentElement;
         id = subElement ? id.parentElement.id : id.id;
@@ -136,13 +147,7 @@ class Blueprint extends Component {
 
     editObject(e) {
         let blueprint = {...this.state.blueprint};
-        const indices = this.getIndices(e);
-        let node = blueprint.nodes[indices[0]]
-
-        for (let i = 1; i < indices.length; i+=2) {
-            node = node[indices[i]][indices[i+1]];}
-
-        node.object = e.target.value;
+        blueprint.nodes[this.getIndex(e)].object = e.target.value;
         this.setState({blueprint:blueprint})
     }
 
@@ -164,105 +169,58 @@ class Blueprint extends Component {
 
         this.setState({blueprint:blueprint}, function() {
             this.setState({blueprint:blueprint})
-        })    
-    }
-
-    branchObject(e) {
-        let blueprint = {...this.state.blueprint};
-
-        const indices = this.getIndices(e,true); // use id for parent element
-        const len = indices.length;
-        let root = blueprint.nodes;
-
-        for (let i = 1; i < len-2; i+=2) {
-            root = root[indices[i-1]][indices[i]];}
-
-        let series = root;
-        if (len > 1) {
-            series = series[indices[len-3]][indices[len-2]];}
-        const node = series[indices[len-1]];
-
-        const index = indices[len - 1];
-
-        if (!index) { // first element -> concatenate array, replace in root
-            const newNode = root[indices[len-3]].concat(
-                [[
-                    {
-                        object:'',
-                        function:'',
-                    }
-                ]]
-            )
-
-            root.splice(indices[len-3],1,newNode);
-        } else if (index === series.length-1) { // last element -> prevent
-            alert('nope');
-            return;
-        } else if (typeof series[index-1].object == 'undefined' ||
-          typeof series[index+1].object == 'undefined') { // either adjacent elements are disjunctions -> prevent
-            alert('nope');
-            return;
-        } else { // chain element -> transform into array, replace in series
-            const newNode = [
-                [
-                    node
-                ],[
-                    {
-                        object:'',
-                        function:'',
-                    }
-                ]
-            ]
-
-            series.splice(index,1,newNode);
-        }
-
-        this.setState({blueprint:blueprint}, function() {
-            this.setState({blueprint:blueprint})
         })
     }
 
     deleteObject(e) {
         let blueprint = {...this.state.blueprint};
-
-        const indices = this.getIndices(e,true); // use id for parent element
-        const len = indices.length;
-        let root = blueprint.nodes;
-
-        for (let i = 1; i < len-2; i+=2) {
-            root = root[indices[i-1]][indices[i]];}
-
-        let series = root;
-        if (len > 1) {
-            series = series[indices[len-3]][indices[len-2]];}
-        const index = indices[len - 1];
-
-        // both adjacent elements are disjunctions -> prevent
-        if ( (index && typeof series[index-1].object == 'undefined') &&
-          (index < series.length-1 && typeof series[index+1].object == 'undefined') ) {
-            alert('nope');
-            return;
-        }
-        
-        series.splice(indices[len-1],1);
-
-        if (len > 1) { // element is above base chain
-            if (!series.length) { // series is empty -> remove series from root
-                root[indices[len-3]].splice(indices[len-2],1);
-            }
-
-            if (root[indices[len-3]].length === 1) { // root has one array left -> replace array with remaining object at root
-                root.splice(indices[len-3],1,root[indices[len-3]][0][0])
-            }
-        }
-
+        blueprint.nodes.splice(this.getIndex(e,true),1);
         this.setState({blueprint:blueprint}, function() {
             this.setState({blueprint:blueprint})
         })
     }
 
+    loadFunctions() {
+        if (!this.state.blueprint.nodes || !this.nodesRef.current) {return;}
+
+        const nodes = this.state.blueprint.nodes;
+        const children = this.nodesRef.current.childNodes[0].childNodes;
+
+        return Array.from({length:nodes.length-1},(_,i)=>i+1).map(i => {
+            if (!children.length) {return [];}
+
+            let coords = this.getEdgeCoordinates(children[i-1],children[i]);
+
+            return this.loadFunction(nodes[i],coords,i);
+        });
+    }
+
+    loadFunction(node,coords,index) {
+        if (!node || !coords) {return;}
+
+        let xPos = (coords[0]+coords[2])/2
+        let yPos = (coords[1]+coords[3])/2;
+
+        return <li className='function'
+            key={'function_'+index}
+            id={'function_'+index}
+            style={{
+                left:xPos,
+                top:yPos
+            }}
+            ><input type='text'
+            value={node.function}
+            onChange={this.editFunction} /></li>
+    }
+
+    editFunction(e) {
+        let blueprint = {...this.state.blueprint};
+        blueprint.nodes[this.getIndex(e)].function = e.target.value;
+        this.setState({blueprint:blueprint})
+    }
+
     getEdgeCoordinates(source,sink) {
-        if (!sink) {return;}
+        if (!sink) {return;} // ?
 
         const x1 = source.offsetLeft + source.clientWidth/2;
         const y1 = source.offsetTop + source.clientHeight/2;
@@ -298,6 +256,8 @@ class Blueprint extends Component {
     }
 
     getPath(nodes, indices) {
+        console.log('loading edges...')
+
         let pathString = '';
         let reference = '';
 
@@ -339,80 +299,8 @@ class Blueprint extends Component {
             }
         }
 
+        // console.log('returning pathString: '+pathString+' <--');
         return pathString;
-    }
-
-    loadFunctionBranch(nodes, reference='', prefix='') {
-        if (!this.nodesRef.current || !nodes ) {return;}
-
-        if (!reference) {
-            reference = this.nodesRef.current.childNodes[0].childNodes;}
-        if (!reference.length) {return;}
-
-        const functionJSX = Array.from({length:nodes.length-1},(_,i)=>i+1).map(i => {
-            if (typeof nodes[i-1].object == 'undefined') { // source is Array -> conjunction
-                return nodes[i-1].map( (_,index) => {
-                    return [];
-                })
-
-            } else if (typeof nodes[i].object == 'undefined') { // sink is Array -> disjunction
-                return nodes[i].map( (branch,index) => {
-                    // disjunction -> outgoing edges
-                    const subReference = reference[i].childNodes[index].childNodes;
-                    const source = reference[i-1];
-                    const sink = subReference[0]; // first object in sub-series
-                    let coords = this.getEdgeCoordinates(source,sink);
-
-                    const identifier = prefix+'_'+i+'_'+index;
-
-                    return <div
-                        key={'function_div'+identifier}
-                        id={'function_div'+identifier}>
-                        {/* outgoing edge */}
-                        {this.loadFunction(nodes[i][index][0],coords,identifier+'_0')}
-                        {/* sub-series */}
-                        {this.loadFunctionBranch(branch,subReference,identifier)}
-                    </div>
-                })
-            } else { // both are Nodes
-                let coords = this.getEdgeCoordinates(reference[i-1],reference[i]);
-                return this.loadFunction(nodes[i],coords,prefix+'_'+i);
-            }
-        });
-
-        return functionJSX;
-    }
-
-    loadFunction(node,coords,identifier) {
-        if (!node || !coords) {return;}
-
-        let xPos = (coords[0]+coords[2])/2
-        let yPos = (coords[1]+coords[3])/2;
-
-        const extendedIdentifier = (identifier === 1) ? 'function_1' : 'function'+identifier;
-
-        return <li className='function'
-            key={extendedIdentifier}
-            id={extendedIdentifier}
-            style={{
-                left:xPos,
-                top:yPos
-            }}
-            ><input type='text'
-            value={node.function}
-            onChange={this.editFunction} /></li>
-    }
-
-    editFunction(e) {
-        let blueprint = {...this.state.blueprint};
-        const indices = this.getIndices(e);
-        let node = blueprint.nodes[indices[0]]
-
-        for (let i = 1; i < indices.length; i+=2) {
-            node = node[indices[i]][indices[i+1]];}
-
-        node.function = e.target.value;
-        this.setState({blueprint:blueprint});
     }
 
     render() { 

@@ -3,6 +3,7 @@
 
 // import Blueprint from './components/component.blueprint';
 import Blueprint from './components/component.hierarchic.blueprint';
+// import Blueprint from './components/component.hierarchic2.blueprint';
 
 function App() {
   return (

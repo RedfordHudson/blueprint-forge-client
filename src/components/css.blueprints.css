@@ -4,10 +4,13 @@
     justify-content:space-between;
     /* align-items:center; */
     background-color: grey;
+
 }
 
 #container {
     position:relative;
+    width:100vw;
+    height:100vh;
 }
 
 #nodes > ul, svg {
@@ -60,7 +63,7 @@ input {
 
 svg {
     z-index:1;
-    /* background-color: white; */
+    background-color: white;
 }
 
 .chain:hover, .branch:hover, .delete:hover, .save:hover {

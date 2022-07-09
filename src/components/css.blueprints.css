@@ -60,9 +60,10 @@ input {
 
 svg {
     z-index:1;
+    /* background-color: white; */
 }
 
-.chain:hover, .delete:hover, .save:hover {
+.chain:hover, .branch:hover, .delete:hover, .save:hover {
     color:red;
 }
 

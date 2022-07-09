@@ -277,6 +277,7 @@ class Blueprint extends Component {
                     const source = reference[i-1].childNodes[index].lastChild; // last object in sub-series
                     const sink = reference[i];
                     let coords = this.getEdgeCoordinates(source,sink);
+                    this.getPathString(coords);
                     // pathString += this.getPathString(coords);
                 })
 
@@ -289,7 +290,8 @@ class Blueprint extends Component {
                         const source = reference[i-1];
                         const sink = subReference[0]; // first object in sub-series
                         let coords = this.getEdgeCoordinates(source,sink);
-                        pathString += this.getPathString(coords);
+                        this.getPathString(coords);
+                        // pathString += this.getPathString(coords);
     
                         // sub-series
                         // pathString += this.getPath(branch,subReference);

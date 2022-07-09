@@ -234,7 +234,7 @@ class Blueprint extends Component {
                 root[indices[len-3]].splice(indices[len-2],1);
             }
 
-            if (root[indices[len-3]].length == 1) { // root has one array left -> replace array with remaining object at root
+            if (root[indices[len-3]].length === 1) { // root has one array left -> replace array with remaining object at root
                 root.splice(indices[len-3],1,root[indices[len-3]][0][0])
             }
         }
@@ -260,7 +260,7 @@ class Blueprint extends Component {
         return 'M'+coords[0]+' '+coords[1]+' L'+coords[2]+' '+coords[3]+' ';}
 
     getPath(nodes, reference='') {
-        return '';
+        // return '';
 
         if (!this.nodesRef.current || !nodes ) {return;}
 
@@ -306,7 +306,7 @@ class Blueprint extends Component {
     }
 
     loadFunctionBranch(nodes, reference='', prefix='') {
-        return;
+        // return;
 
         if (!this.nodesRef.current || !nodes ) {return;}
 
@@ -390,14 +390,14 @@ class Blueprint extends Component {
                     <div id='nodes'
                         ref={this.nodesRef}>
                         {this.loadObjectBranch(this.state.blueprint.nodes,'')}
-                        <ul id='functions'>{this.loadFunctionBranch(this.state.blueprint.nodes)}</ul>
+                        {/* <ul id='functions'>{this.loadFunctionBranch(this.state.blueprint.nodes)}</ul> */}
                     </div>
                     <svg ref={this.svgRef}>
-                    <path 
+                    {/* <path 
                         stroke='black'
                         stroke_width='10'
-                        d={this.getPath(this.state.blueprint.nodes)} />
-                        </svg>
+                        d={this.getPath(this.state.blueprint.nodes)} /> */}
+                    </svg>
                 </div>
             </div>
         );

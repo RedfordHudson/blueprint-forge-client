@@ -178,7 +178,7 @@ class Blueprint extends Component {
             )
 
             root.splice(indices[len-3],1,newNode);
-        } else if (index == series.length-1) { // last element -> prevent
+        } else if (index === series.length-1) { // last element -> prevent
             alert('nope');
             return;
         } else if (typeof series[index-1].object == 'undefined' ||
@@ -277,7 +277,7 @@ class Blueprint extends Component {
                     const source = reference[i-1].childNodes[index].lastChild; // last object in sub-series
                     const sink = reference[i];
                     let coords = this.getEdgeCoordinates(source,sink);
-                    pathString += this.getPathString(coords);
+                    // pathString += this.getPathString(coords);
                 })
 
             } else if (typeof nodes[i].object == 'undefined') { // sink is Array -> disjunction
@@ -292,7 +292,7 @@ class Blueprint extends Component {
                         pathString += this.getPathString(coords);
     
                         // sub-series
-                        pathString += this.getPath(branch,subReference);
+                        // pathString += this.getPath(branch,subReference);
                     }
                 })
             } else { // both are Nodes
@@ -317,7 +317,7 @@ class Blueprint extends Component {
         const functionJSX = Array.from({length:nodes.length-1},(_,i)=>i+1).map(i => {
             if (typeof nodes[i-1].object == 'undefined') { // source is Array -> conjunction
                 return nodes[i-1].map( (_,index) => {
-                    return;
+                    return [];
                 })
 
             } else if (typeof nodes[i].object == 'undefined') { // sink is Array -> disjunction
@@ -354,7 +354,7 @@ class Blueprint extends Component {
         let xPos = (coords[0]+coords[2])/2
         let yPos = (coords[1]+coords[3])/2;
 
-        const extendedIdentifier = (identifier == 1) ? 'function_1' : 'function'+identifier;
+        const extendedIdentifier = (identifier === 1) ? 'function_1' : 'function'+identifier;
 
         return <li className='function'
             key={extendedIdentifier}

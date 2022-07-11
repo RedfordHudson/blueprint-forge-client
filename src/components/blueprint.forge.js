@@ -101,7 +101,7 @@ function BlueprintForge() {
                 //      after 1000ms ->
                 //          retrieve schema from database
                 setTimeout(() => {
-                    saveBlueprintName('New Blueprint');
+                    saveBlueprintName(blueprint.name);
                 },1000)
             })
         } else { // save blueprint by ID

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation, Link } from 'react-router-dom';
 import './blueprints.css';
@@ -9,7 +9,7 @@ function BlueprintForge() {
 
     const location = useLocation();
     const URL = 'https://database-streamline-server.herokuapp.com/blueprints/';
-    const timeoutLength = 2000;
+    // const timeoutLength = 2000;
 
     const [blueprintName, saveBlueprintName] = useState(() => {return location.state.name});
     const [addFlag, disableAddFlag] = useState(() => {return blueprintName === '_add'});
@@ -20,7 +20,7 @@ function BlueprintForge() {
     const nameInputRef = useRef();
     
     const nameTextField = () => {
-        const {name} = blueprint;
+        const name = blueprint?.name;
 
         return <input type='text'
             id='name'
@@ -35,10 +35,9 @@ function BlueprintForge() {
     }
     
     useEffect(() => {
-        // console.log('mounting');
+        getBlueprint(blueprintName)
 
-        getBlueprint(blueprintName);
-
+        /*
         window.addEventListener('resize',handleResize);
 
         return () => {
@@ -50,17 +49,19 @@ function BlueprintForge() {
             // remove event listener to liberate and replenish memory
             window.removeEventListener('resize',handleResize);
         }
-    },[])
+        */
+    }, [blueprintName])
 
+    /*
     const handleResize = () => {
         setTimeout(() => {updateBlueprint(blueprint)},timeoutLength)
         // console.log(window.innerWidth);
-    }
+    }*/
 
     // === [ MongoDB ] ===
 
     const getBlueprint = (name) => {
-        
+
         if (name === '_add') { // create blueprint
             updateBlueprint({
                 name: 'New Blueprint',
@@ -77,8 +78,6 @@ function BlueprintForge() {
                     }
                 ]
             })
-
-        saveBlueprintName('New Blueprint');
 
         } else { // fetch blueprint
             axios.get(URL+name)
@@ -102,7 +101,7 @@ function BlueprintForge() {
                 //      after 1000ms ->
                 //          retrieve schema from database
                 setTimeout(() => {
-                    getBlueprint(blueprint.name)
+                    saveBlueprintName('New Blueprint');
                 },1000)
             })
         } else { // save blueprint by ID
@@ -376,7 +375,7 @@ function BlueprintForge() {
             root.complete = true;}
 
         updateBlueprint(newBlueprint)
-    } 
+    }
 
     return ( 
         <div id='component'>
@@ -387,7 +386,7 @@ function BlueprintForge() {
                 <div id='nodes'
                     // ref={nodesRef}
                     >
-                    {loadFunctionBranch(blueprint.series,'')}
+                    {loadFunctionBranch(blueprint?.series,'')}
                     {/* <ul id='objects'>{this.tryObjectBranch(blueprint.series)}</ul> */}
                     <svg>
                         <path 

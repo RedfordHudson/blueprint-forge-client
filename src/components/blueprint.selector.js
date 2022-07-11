@@ -31,11 +31,6 @@ class BlueprintSelector extends Component {
             })
     }
 
-    routeToBlueprint(e) {
-        const name = e.target.id.split('blueprint-')[1];
-        console.log(name);
-    }
-
     loadBlueprints(add) {
         let names = ['_add'];
 
@@ -48,7 +43,7 @@ class BlueprintSelector extends Component {
                 id={'blueprint-'+name}
                 key={'blueprint-'+name}
                 className={add ? 'add card' : 'card'} 
-                onClick={this.routeToBlueprint}>
+                >
                     {add ? '+' : name}
                 </Link>
         })

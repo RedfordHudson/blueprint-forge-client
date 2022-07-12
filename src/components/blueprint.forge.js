@@ -129,9 +129,17 @@ function BlueprintForge() {
                         return <li className={'function '+(node.complete ? 'complete' : 'incomplete')}
                             key={'function'+identifier}
                             id={'function'+identifier}>
-                                <input type='text'
+                                <textarea type='text'
                                     value={node.function}
-                                    onChange={editFunction} />
+                                    onChange={editFunction} 
+                                    onKeyUp={(e) => {
+                                        const field = document.getElementById('function'+identifier).firstChild;
+                                        field.style.height = 'auto';
+
+                                        const height = e.target.scrollHeight;
+                                        field.style.height = ''+height+'px';
+                                    }}
+                                    />
                                 {addCompleteButton(node,series,identifier)}
                                 {addButtons(node,identifier,series)}
                             </li>

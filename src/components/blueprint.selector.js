@@ -1,62 +1,63 @@
-import React, { Component } from 'react';
 import axios from 'axios';
-import './blueprint.selector.css';
+import './blueprints.css';
 
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
-class BlueprintSelector extends Component {
-    constructor(props) {
-        super(props);
+function BlueprintSelector() {
+    
+    // === [ Constants ] ===
+    const URL = 'https://blueprint-forge-server.herokuapp.com/blueprints/';
+    const [blueprints, updateBlueprints] = useState(() => { return [] });
 
-        this.componentDidMount = this.componentDidMount.bind(this);
-        this.getBlueprints = this.getBlueprints.bind(this);
-        this.loadBlueprints = this.loadBlueprints.bind(this);
+    // === [ Framework ] ===
+    
+    useEffect(() => {
+        getBlueprints();
+    },[]);
 
-        this.state = { 
-            URL:'https://database-streamline-server.herokuapp.com/blueprints/',
-            blueprints:[],
-        }
-    }
-
-    componentDidMount() {
-        this.getBlueprints();
-    }
-
-    getBlueprints() {
-        axios.get(this.state.URL)
-            .then(data => {
-                this.setState({
-                    blueprints:data.data
-                })
+    const getBlueprints = () => {
+        axios.get(URL)
+            .then(blueprints => {
+                updateBlueprints(blueprints.data);
             })
     }
 
-    loadBlueprints(add) {
-        let names = ['_add'];
+    // === [ DOM ] ===
 
-        if (!add) {
-            names = this.state.blueprints.map(blueprint => blueprint.name)}
+    const loadAddBlueprint = () => {
+        return <Link to={'/blueprint/'+'_add'}
+                state={{ name: '_add' }}
+                id={'add'}
+                key={'blueprint-'+'_add'}
+                className='card'>
+                    {'+'}
+                </Link>
+    }
 
-        return names.map(name => {
+    const loadBlueprints = () => {
+        if (!blueprints) {return '';}
+
+        return blueprints.map(blueprint => {
+            const {name, complete} = blueprint;
+
             return <Link to={'/blueprint/'+name}
                 state={{ name: name }}
                 id={'blueprint-'+name}
                 key={'blueprint-'+name}
-                className={add ? 'add card' : 'card'} 
+                className={'card ' + (complete ? 'complete' : 'incomplete')} 
                 >
-                    {add ? '+' : name}
+                    {name}
                 </Link>
         })
     }
 
-    render() { 
-        return ( 
-            <div id='container'>
-                {this.loadBlueprints(false)}
-                {this.loadBlueprints(true)}
-            </div>
-        );
-    }
+    return ( 
+        <div id='container'>
+            {loadBlueprints()}
+            {loadAddBlueprint()}
+        </div>
+    );
 }
  
 export default BlueprintSelector;

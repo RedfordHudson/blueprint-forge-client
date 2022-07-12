@@ -8,7 +8,7 @@ function BlueprintForge() {
     // === [ Constants ] ===
 
     const location = useLocation();
-    const URL = 'https://database-streamline-server.herokuapp.com/blueprints/';
+    const URL = 'https://blueprint-forge-server.herokuapp.com/blueprints/';
     // const timeoutLength = 2000;
 
     const [blueprintName, saveBlueprintName] = useState(() => {return location.state.name});
@@ -24,6 +24,7 @@ function BlueprintForge() {
 
         return <input type='text'
             id='name'
+            className='frame'
             ref={nameInputRef}
             value={name ? name : '...'}
             onChange={(e) => {
@@ -171,7 +172,7 @@ function BlueprintForge() {
             if (!root[indices[len-3]-1].complete) {return;}
         }
 
-        return <div><button className='complete'
+        return <div><button className='completeButton'
             onClick={completeFunction}>Complete</button></div>
     }
 
@@ -377,26 +378,26 @@ function BlueprintForge() {
         updateBlueprint(newBlueprint)
     }
 
-    return ( 
-        <div id='component'>
-            <button id='save'
-                onClick={saveBlueprint} >Save</button>
-                <h1>Blueprint: {nameTextField()}
-                </h1>
-                <div id='nodes'
-                    // ref={nodesRef}
-                    >
-                    {loadFunctionBranch(blueprint?.series,'')}
-                    {/* <ul id='objects'>{this.tryObjectBranch(blueprint.series)}</ul> */}
-                    <svg>
-                        <path 
-                            stroke='black'
-                            stroke_width='10'
-                            // d={tryPath()}
-                            />
-                    </svg>
-                </div>
-            <Link to={'/'} id={'back'}>Back</Link>
+    return (
+        <div id='container'
+            // ref={nodesRef}
+            >
+            <div id='frame-div'>
+                <Link className='frame' to={'/'} id={'back'}>Back</Link>
+                <button id='save' className='frame' 
+                    onClick={saveBlueprint} >Save</button>
+            </div>
+            {nameTextField()}
+            
+            {loadFunctionBranch(blueprint?.series,'')}
+            {/* <ul id='objects'>{this.tryObjectBranch(blueprint.series)}</ul> */}
+            <svg>
+                <path 
+                    stroke='black'
+                    stroke_width='10'
+                    // d={tryPath()}
+                    />
+            </svg>
         </div>
     );
 

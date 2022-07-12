@@ -26,10 +26,10 @@ function BlueprintSelector() {
     // === [ DOM ] ===
 
     const loadAddBlueprint = () => {
-        return <Link to={'/blueprint/'+'_add'}
+        return <Link to={'/blueprint/_add'}
                 state={{ name: '_add' }}
                 id={'add'}
-                key={'blueprint-'+'_add'}
+                key={'blueprint-_add'}
                 className='card'>
                     {'+'}
                 </Link>

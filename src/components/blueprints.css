@@ -106,10 +106,6 @@ button:hover {
     cursor: pointer;
 }
 
-.frame {
-
-}
-
 #frame-div {
     position:absolute;
     top:1vh;

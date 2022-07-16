@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 function BlueprintSelector() {
     
     // === [ Constants ] ===
-    
+
     // const URL = 'http://localhost:3001/';
     const URL = 'https://blueprint-forge-server.herokuapp.com/';
     const expressBuffer = 25;
@@ -51,9 +51,6 @@ function BlueprintSelector() {
     }
 
     const updateBlueprintCategory = (name, category) => {
-
-        console.log('updating '+name+' to '+category)
-
         const blueprint = blueprints.filter(blueprint => blueprint.name === name)[0]
         const newBlueprint = {...blueprint, category}
 
@@ -65,7 +62,7 @@ function BlueprintSelector() {
 
     const updateBlueprintPriority = (name, priority) => {
         const blueprint = blueprints.filter(blueprint => blueprint.name === name)[0]
-        const newBlueprint = {...blueprint, priority}
+        const newBlueprint = {...blueprint, priority:priority}
 
         axios.patch(URL+'blueprints/update/'+blueprint._id,newBlueprint)
             .then(() => {setTimeout(getBlueprints,expressBuffer)});
@@ -96,22 +93,19 @@ function BlueprintSelector() {
                     <Link to={'/blueprint/'+name}
                         state={{ name: name }}
                         className='link'>
-                        {name}
+                        <p>{name}</p>
                     </Link>
                     <div className='radio'>
-                        Priority:
                         {[1,2,3].map(i => {
                             return <>
                                 <input type='radio'
-                                    id={'priority-'+i}
+                                    id={'blueprint-'+name+'-priority-'+i}
                                     key={'blueprint-'+name+'-priority-'+i}
                                     value={i}
                                     checked={i===priority ? 'checked' : ''}
-                                    onChange={(e) => {
-                                        const i = e.currentTarget.id.split('-')[1]
-                                        updateBlueprintPriority(name,i)}}
+                                    onChange={(e) => {updateBlueprintPriority(name,i)}}
                                     name={'blueprint-'+name+'-priority'} />
-                                <label>{i}</label>
+                                <label htmlFor={'blueprint-'+name+'-priority-'+i}>{i}</label>
                             </>
                         })}
                     </div>

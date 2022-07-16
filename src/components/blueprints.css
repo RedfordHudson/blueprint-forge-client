@@ -2,11 +2,11 @@
 
 * {
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size:10px;
 }
 
 body {
     background-color: rgb(49, 49, 49);
+    font-size:10px;
 }
 
 #container, #navbar {
@@ -28,7 +28,7 @@ body {
     height: calc(10vh - 12px);
     background: linear-gradient(rgb(146, 153, 179), rgb(255, 255, 255));
 
-    flex:4;
+    flex: 1;
 }
 
 #navbar > li.selected {
@@ -43,8 +43,9 @@ body {
 }
 
 #navbar > li:hover {
-    flex:5;
-    border: 10px solid black;
+    flex: 2;
+    background: linear-gradient(rgb(0, 255, 60), rgb(255, 255, 255));
+    cursor: pointer;
 }
 
 #container {
@@ -55,20 +56,6 @@ body {
 
     justify-content: space-around;
     flex-flow: row wrap;
-}
-
-.card {
-    color:white;
-    text-decoration: none;
-    text-align: center;
-    font-size: 2em;
-
-    height:30%;
-    width:15%;
-
-    cursor:move;
-
-    /* border-radius: 5%; */
 }
 
 .incomplete { 
@@ -97,6 +84,30 @@ body {
     font-size: 8em;
 }
 
+#add {
+    color:white;
+    text-decoration: none;
+}
+
+.card {
+    text-align: center;
+    font-size: 2em;
+
+    height:30%;
+    width:15%;
+
+    cursor:move;
+}
+
+.card > * {
+    display:block;
+    margin: .3em auto;
+}
+
+.card > .link > p {
+    margin: auto 2vw;
+}
+
 .priority-1:not(.complete) {
     background-color: rgb(255, 47, 47);
 }
@@ -115,6 +126,51 @@ body {
 
 #add:hover, .radio:hover {
     cursor: pointer;
+}
+
+.link {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+.link > p {
+    background: linear-gradient(rgb(146, 153, 179), rgb(255, 255, 255));
+    border: 5px solid black;
+}
+
+.link:hover > p {
+    background: linear-gradient(rgb(0, 255, 60), rgb(255, 255, 255));
+}
+
+.radio {
+    display: inline-flex;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 5px solid black;
+}
+
+.radio > input {
+    display:none;
+}
+
+.radio > input + label {
+    padding: .3em;
+    background: linear-gradient(rgb(146, 153, 179), rgb(255, 255, 255));
+    cursor:pointer;
+}
+
+.radio > input + label:not(:last-of-type) {
+    border-right: 5px solid black;
+}
+
+.radio > input + label:hover {
+    background: linear-gradient(rgb(0, 255, 60), rgb(255, 255, 255));
+}
+
+.radio > input:checked + label {
+    background: linear-gradient(rgb(0, 55, 255), rgb(255, 255, 255));
+    font-weight: bold;
 }
 
 /* === [ Blueprint Forge ] === */
@@ -178,14 +234,16 @@ button:hover {
     left:45vw;
     width:10vw;
 
-    height:8vh;
+    height:5vh;
 
     display: flex;
     justify-content: space-between;
 }
 
-#frame-div > * {
-    flex:1;
+.frame > p {
+    font-size:1em;
+    position:relative;
+    width:5vw;
 }
 
 #name {

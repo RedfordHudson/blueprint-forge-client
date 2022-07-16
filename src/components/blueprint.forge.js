@@ -396,9 +396,10 @@ function BlueprintForge() {
 
     return ( <>
         <div id='frame-div'>
-            <Link className='frame' to={'/'} id={'back'}>Back</Link>
-            <button id='save' className='frame' 
-                onClick={saveBlueprint} >Save</button>
+            <Link className='frame' id={'back'}
+                to={'/'} ><p>Back</p></Link>
+            <button className='frame' id='save' 
+                onClick={saveBlueprint} ><p>Save</p></button>
         </div>
         {nameTextField()}
         <div id='container'

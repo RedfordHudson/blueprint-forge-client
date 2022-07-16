@@ -9,7 +9,10 @@ function BlueprintForge() {
 
     const location = useLocation();
     const URL = 'https://blueprint-forge-server.herokuapp.com/blueprints/';
+    // const URL = 'http://localhost:3001/blueprints/';
     // const timeoutLength = 2000;
+
+    const { category } = location.state;
 
     const [blueprintName, saveBlueprintName] = useState(() => {return location.state.name});
     const [addFlag, disableAddFlag] = useState(() => {return blueprintName === '_add'});
@@ -20,6 +23,9 @@ function BlueprintForge() {
     const nameInputRef = useRef();
     
     const nameTextField = () => {
+        // create separate variable to store name
+        // disable: ? / -
+
         const name = blueprint?.name;
 
         return <input type='text'
@@ -51,7 +57,7 @@ function BlueprintForge() {
             window.removeEventListener('resize',handleResize);
         }
         */
-    }, [blueprintName])
+    })
 
     /*
     const handleResize = () => {
@@ -67,6 +73,8 @@ function BlueprintForge() {
             updateBlueprint({
                 name: 'New Blueprint',
                 complete: false,
+                category: category,
+                priority: 1,
                 series: [
                     {
                         object:'start',
@@ -386,16 +394,16 @@ function BlueprintForge() {
         updateBlueprint(newBlueprint)
     }
 
-    return (
+    return ( <>
+        <div id='frame-div'>
+            <Link className='frame' to={'/'} id={'back'}>Back</Link>
+            <button id='save' className='frame' 
+                onClick={saveBlueprint} >Save</button>
+        </div>
+        {nameTextField()}
         <div id='container'
             // ref={nodesRef}
             >
-            <div id='frame-div'>
-                <Link className='frame' to={'/'} id={'back'}>Back</Link>
-                <button id='save' className='frame' 
-                    onClick={saveBlueprint} >Save</button>
-            </div>
-            {nameTextField()}
             
             {loadFunctionBranch(blueprint?.series,'')}
             {/* <ul id='objects'>{this.tryObjectBranch(blueprint.series)}</ul> */}
@@ -407,7 +415,7 @@ function BlueprintForge() {
                     />
             </svg>
         </div>
-    );
+    </>);
 
     
 

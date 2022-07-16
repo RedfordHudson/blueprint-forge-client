@@ -9,12 +9,12 @@ function BlueprintForge() {
 
     const location = useLocation();
     const URL = 'https://blueprint-forge-server.herokuapp.com/blueprints/';
-    // const URL = 'http://localhost:3001/blueprints/';
     // const timeoutLength = 2000;
-
-    const { category } = location.state;
+    
+    const category = location.state.category;
 
     const [blueprintName, saveBlueprintName] = useState(() => {return location.state.name});
+
     const [addFlag, disableAddFlag] = useState(() => {return blueprintName === '_add'});
     const [blueprint, updateBlueprint] = useState(() => {return []});
 
@@ -23,9 +23,6 @@ function BlueprintForge() {
     const nameInputRef = useRef();
     
     const nameTextField = () => {
-        // create separate variable to store name
-        // disable: ? / -
-
         const name = blueprint?.name;
 
         return <input type='text'
@@ -43,7 +40,7 @@ function BlueprintForge() {
     
     useEffect(() => {
         getBlueprint(blueprintName)
-
+        
         /*
         window.addEventListener('resize',handleResize);
 
@@ -57,6 +54,7 @@ function BlueprintForge() {
             window.removeEventListener('resize',handleResize);
         }
         */
+    // eslint-disable-next-line
     }, [blueprintName])
 
     /*
@@ -73,8 +71,8 @@ function BlueprintForge() {
             updateBlueprint({
                 name: 'New Blueprint',
                 complete: false,
-                category: category,
-                priority: 1,
+                category,
+                priority: 3,
                 series: [
                     {
                         object:'start',
@@ -100,6 +98,7 @@ function BlueprintForge() {
 
         // handle name
         //    can't be name that already exists
+        // (I think) no question marks
 
         if (addFlag) { // add blueprint
             disableAddFlag(false);
@@ -393,17 +392,16 @@ function BlueprintForge() {
         updateBlueprint(newBlueprint)
     }
 
-    return ( <>
-        <div id='frame-div'>
-            <Link className='frame' id={'back'}
-                to={'/'} ><p>Back</p></Link>
-            <button className='frame' id='save' 
-                onClick={saveBlueprint} ><p>Save</p></button>
-        </div>
-        {nameTextField()}
+    return (
         <div id='container'
             // ref={nodesRef}
             >
+            <div id='frame-div'>
+                <Link className='frame' to={'/'} id={'back'}>Back</Link>
+                <button id='save' className='frame' 
+                    onClick={saveBlueprint} >Save</button>
+            </div>
+            {nameTextField()}
             
             {loadFunctionBranch(blueprint?.series,'')}
             {/* <ul id='objects'>{this.tryObjectBranch(blueprint.series)}</ul> */}
@@ -415,7 +413,7 @@ function BlueprintForge() {
                     />
             </svg>
         </div>
-    </>);
+    );
 
     
 

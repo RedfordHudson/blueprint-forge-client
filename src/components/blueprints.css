@@ -227,38 +227,43 @@ button:hover {
     cursor: pointer;
 }
 
+#name {
+    position:absolute;
+    box-sizing: border-box;
+
+    left:15vw;
+    width:50vw;
+
+    /* top:5vh; */
+    height:8vh;
+
+    font-size: 2em;
+    text-align: center;
+    z-index:3;
+}
+
 #frame-div {
     position:absolute;
     box-sizing: border-box;
 
-    left:45vw;
+    /* background-color: white; */
+
+    left:35vw;
     width:10vw;
 
+    top: -5vh;
     height:5vh;
 
     display: flex;
     justify-content: space-between;
+
+    z-index: 10;
 }
 
 .frame > p {
     font-size:1em;
     position:relative;
     width:5vw;
-}
-
-#name {
-    position:absolute;
-    box-sizing: border-box;
-
-    left:25vw;
-    width:50vw;
-
-    top:5vh;
-    height:8vh;
-
-    font-size: 2em;
-    text-align: center;
-    z-index:3;
 }
 
 svg {

@@ -57,7 +57,7 @@ function BlueprintForge() {
             window.removeEventListener('resize',handleResize);
         }
         */
-    })
+    }, [blueprintName])
 
     /*
     const handleResize = () => {
@@ -100,7 +100,6 @@ function BlueprintForge() {
 
         // handle name
         //    can't be name that already exists
-        // (I think) no question marks
 
         if (addFlag) { // add blueprint
             disableAddFlag(false);

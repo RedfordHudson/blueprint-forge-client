@@ -1,12 +1,14 @@
 import axios from 'axios';
 import './blueprints.css';
 
-import { Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 function BlueprintSelector() {
     
     // === [ Constants ] ===
+
+    const location = useLocation();
 
     // const URL = 'http://localhost:3001/';
     const URL = 'https://blueprint-forge-server.herokuapp.com/';
@@ -15,8 +17,16 @@ function BlueprintSelector() {
     const [categories, updateCategories] = useState(() => { return [] });
     const [blueprints, updateBlueprints] = useState(() => { return [] });
 
-    const [currentCategory, updateCurrentCategory] = useState(() => { return 'undecided' });
-    const [draggedBlueprint, updateDraggedBlueprint] = useState(() => { return 'l' });
+    const [currentCategory, updateCurrentCategory] = useState(() => { 
+        
+        // improper fix to solution
+        let category = 'Adventure';
+        
+        if (location?.state) {
+            category = location.state.category;}
+        
+        return category});
+    const [draggedBlueprint, updateDraggedBlueprint] = useState(() => { return '_' });
 
     // === [ Framework ] ===
     
@@ -24,10 +34,6 @@ function BlueprintSelector() {
         getCategories();
         getBlueprints();
     },[]);
-
-    useEffect(() => {
-        updateCurrentCategory(categories[0])
-    }, [categories]);
 
     const getCategories = () => {
         axios.get(URL+'categories/')
@@ -54,8 +60,6 @@ function BlueprintSelector() {
         const blueprint = blueprints.filter(blueprint => blueprint.name === name)[0]
         const newBlueprint = {...blueprint, category}
 
-        console.log(newBlueprint)
-
         axios.patch(URL+'blueprints/update/'+blueprint._id,newBlueprint)
             .then(() => {setTimeout(getBlueprints,expressBuffer)});
     }
@@ -66,6 +70,59 @@ function BlueprintSelector() {
 
         axios.patch(URL+'blueprints/update/'+blueprint._id,newBlueprint)
             .then(() => {setTimeout(getBlueprints,expressBuffer)});
+    }
+
+    const navbar = () => {
+        return <ul id='navbar'>
+            { categories.map(category => {
+                return <li id={'category-'+category}
+                    key={'category-'+category}
+                    className={category === currentCategory ? 'selected' : ''}
+                    onClick={() => updateCurrentCategory(category)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                        e.preventDefault();
+
+                        let dropTarget = e.target;
+
+                        if (dropTarget.tagName === 'P') {dropTarget = dropTarget.parentElement}
+                        else if (dropTarget.className.includes('indicator')) {dropTarget = dropTarget.parentElement.parentElement}
+
+                        const id = dropTarget.id.split('-')[1];
+                        
+                        updateBlueprintCategory(draggedBlueprint,id);
+                    }}                >
+                    <p>{category}</p>
+                    {indicator(category)}
+                </li>
+            }) }
+        </ul>
+    }
+
+    const indicator = (category) => {
+        const currentBlueprints = blueprints.filter(blueprint => blueprint.category === category);
+        
+        const completeCount = currentBlueprints.reduce( (count, blueprint) => {
+            return count + (blueprint.complete ? 1 : 0);
+        }, 0)
+
+        const completeIndicator = !completeCount ? <></> : <li key='complete'
+            className='indicator-complete'>
+            {completeCount>1?completeCount:''}</li>
+
+        return <ul className='indicator'>
+            {[1,2,3].map(priority => {
+                const count = currentBlueprints.reduce( (count, blueprint) => {
+                    return count + (!blueprint.complete && blueprint.priority === priority ? 1 : 0);
+                }, 0)
+
+                return !count ? <></> : <li key={priority}
+                    className={'indicator-priority-'+priority}>
+                    {count>1?count:''}</li>
+            })}
+
+            {completeIndicator}   
+        </ul>
     }
 
     const loadBlueprints = () => {
@@ -82,7 +139,7 @@ function BlueprintSelector() {
             return <div
                 id={'blueprint-'+name}
                 key={'blueprint-'+name}
-                className={'card ' + (complete ? 'complete' : 'incomplete') + ' priority-'+priority} 
+                className={'card ' + (complete ? 'complete' : ' priority-'+priority)} 
                 
                 draggable='true'
                 onDragStart={(e) => {
@@ -91,49 +148,31 @@ function BlueprintSelector() {
                 }}
                 >
                     <Link to={'/blueprint/'+name}
-                        state={{ name: name }}
+                        state={{ name, category: currentCategory }}
                         className='link'>
                         <p>{name}</p>
                     </Link>
-                    <div className='radio'>
-                        {[1,2,3].map(i => {
-                            return <>
-                                <input type='radio'
-                                    id={'blueprint-'+name+'-priority-'+i}
-                                    key={'blueprint-'+name+'-priority-'+i}
-                                    value={i}
-                                    checked={i===priority ? 'checked' : ''}
-                                    onChange={(e) => {updateBlueprintPriority(name,i)}}
-                                    name={'blueprint-'+name+'-priority'} />
-                                <label htmlFor={'blueprint-'+name+'-priority-'+i}>{i}</label>
-                            </>
-                        })}
-                    </div>
+                    {complete ? <></> : addPriorityRadio(name,priority)}
                     <button onClick={() => deleteBlueprint(name)}>Delete</button>
                 </div>
         })
     }
 
-    const navbar = () => {
-        return <ul id='navbar'>
-            { categories.map(category => {
-                return <li id={'category-'+category}
-                    key={'category-'+category}
-                    className={category === currentCategory ? 'selected' : ''}
-                    onClick={() => updateCurrentCategory(category)}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={(e) => {
-                        e.preventDefault();
-
-                        let id = e.target.id;
-                        if (!id) {id = e.target.parentElement.id}
-                        
-                        updateBlueprintCategory(draggedBlueprint,id.split('-')[1]);
-                    }}                >
-                    <p>{category}</p>
-                </li>
-            }) }
-        </ul>
+    const addPriorityRadio = (name,priority) => {
+        return <div className='radio'>
+            {[1,2,3].map(i => {
+                return <>
+                    <input type='radio'
+                        id={'blueprint-'+name+'-priority-'+i}
+                        key={'blueprint-'+name+'-priority-'+i}
+                        value={i}
+                        checked={i===priority ? 'checked' : ''}
+                        onChange={() => {updateBlueprintPriority(name,i)}}
+                        name={'blueprint-'+name+'-priority'} />
+                    <label htmlFor={'blueprint-'+name+'-priority-'+i}>{i}</label>
+                </>
+            })}
+        </div>
     }
     
     const loadAddBlueprint = () => {

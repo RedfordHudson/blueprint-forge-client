@@ -125,13 +125,16 @@ function SpacesSelector() {
                 id={'space-'+name}
                 key={'space-'+name}
                 className='card-container'
-                style={{backgroundImage: 'url('+ (space.picture_URL) +')'}}
+                // style={{backgroundImage: 'url('+ (space.picture_URL) +')'}}
                 
                 draggable='true'
                 onDragStart={() => {
                     updateDraggedSpace(space);
                 }}
                 >
+                    <img className='card-image'
+                        src={space.picture_URL}
+                        alt=''/>
                     <div className='card-content'>
                         <p>{name}</p>
                         <button onClick={(e) => {

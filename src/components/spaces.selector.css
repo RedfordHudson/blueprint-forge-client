@@ -62,8 +62,6 @@
     text-align: center;
     font-size: 2em;
 
-    border: 5px solid black;
-    border-radius: 10%;
     width: 20vw;
     height:30vh;
     
@@ -74,6 +72,13 @@
     cursor:move;
 }
 
+.card-image {
+    max-height:100%;
+    margin:0 auto;
+    border: 5px solid black;
+    border-radius: 20px;
+}
+
 .card-content {
     position: absolute;
     width: 100%;
@@ -82,6 +87,10 @@
     left: 0;
   
     opacity: .8;
+}
+
+.card-image:hover + .card-image{
+    border: 10px solid black;
 }
 
 .card-content > * {

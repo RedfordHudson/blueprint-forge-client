@@ -1,0 +1,22 @@
+.portal {
+    cursor:pointer;
+
+    width:30vw;
+    height:30vh;
+
+    background: linear-gradient(rgb(0, 170, 255), rgb(255, 255, 255));
+    border: 5px solid black;
+    
+    text-align: center;
+    font-size:3em;
+    color:white;
+    text-decoration: none;
+}
+
+.portal p {
+}
+
+.portal:hover {
+    border: 10px solid black;
+    background: linear-gradient(rgb(0, 255, 60), rgb(255, 255, 255));
+}

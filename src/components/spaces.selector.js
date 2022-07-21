@@ -43,10 +43,327 @@ function SpacesSelector() {
     },[elements, currentElement])
 
     const getElements = () => {
-        axios.get(URL+'elements')
-            .then(elements => {
-                updateElements(elements.data.elements);
-            })
+        // axios.get(URL+'elements')
+        //     .then(elements => {
+        //         updateElements(elements.data.elements);
+        //     })
+
+        updateElements([
+            {
+                "anatomic": "Physical",
+                "civic": "Industrial",
+                "function": "Energy",
+                "element": "Fire",
+                "attributes": [
+                    {
+                        "attribute": "Strength",
+                        "anatomic": "Musculature",
+                        "civic": "Military",
+                        "mythological": "Ares",
+                        "professional": "Soldier",
+                        "fantastic": "Warrior",
+                        "description": "Volume of potential force to be mobilized."
+                    },
+                    {
+                        "attribute": "Fortitude",
+                        "anatomic": "Skeleton",
+                        "civic": "Industry",
+                        "mythological": "Vulcan",
+                        "professional": "Constructor",
+                        "fantastic": "Mason",
+                        "aesthetic": "Steampunk",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Resistance",
+                        "anatomic": "Integument",
+                        "civic": "Boundary",
+                        "mythological": "Terminus",
+                        "professional": "Warden",
+                        "fantastic": "Guardian",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Immunity",
+                        "anatomic": "Immune System",
+                        "civic": "Law Enforcement",
+                        "mythological": "Thanatos",
+                        "professional": "Officer",
+                        "fantastic": "Paladin",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Tension",
+                        "anatomic": "Tendons",
+                        "civic": "?",
+                        "mythological": "Artemis",
+                        "professional": "Spy",
+                        "fantastic": "Archer",
+                        "description": "..."
+                    }
+                ]
+            },
+            {
+                "anatomic": "Financial",
+                "civic": "Economic",
+                "function": "Capital",
+                "element": "Water",
+                "attributes": [
+                    {
+                        "attribute": "Acquisition",
+                        "anatomic": "Digestion",
+                        "civic": "Resource Extraction",
+                        "mythological": "Hades",
+                        "professional": "Miner",
+                        "fantastic": "Necromancer",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Logistics",
+                        "anatomic": "Circulation",
+                        "civic": "Infrastructure",
+                        "mythological": "Poseidon",
+                        "professional": "Supplier",
+                        "fantastic": "Geomancer",
+                        "aesthetic": "?",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Agility",
+                        "anatomic": "Peripheral Nervous",
+                        "civic": "Communication",
+                        "mythological": "Hermes",
+                        "professional": "Ambassador",
+                        "fantastic": "Rogue",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Trade",
+                        "anatomic": "Pancreas?",
+                        "civic": "Commerce",
+                        "mythological": "Mercury",
+                        "professional": "Salesman",
+                        "fantastic": "Merchant",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Business",
+                        "anatomic": "?",
+                        "civic": "Business",
+                        "mythological": "Neptune",
+                        "professional": "Entrepreneur",
+                        "fantastic": "?",
+                        "description": ""
+                    },
+                    {
+                        "attribute": "Security",
+                        "anatomic": "Adipose Tissue",
+                        "civic": "Banks",
+                        "mythological": "Plutus",
+                        "professional": "Banker",
+                        "fantastic": "?",
+                        "description": "..."
+                    }
+                ]
+            },
+            {
+                "anatomic": "Healthy",
+                "civic": "Popular",
+                "function": "People",
+                "element": "Earth",
+                "attributes": [
+                    {
+                        "attribute": "Vitality",
+                        "anatomic": "Heart",
+                        "civic": "Residence",
+                        "mythological": "Hestia",
+                        "professional": "Keeper",
+                        "fantastic": "Saint",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Morale",
+                        "anatomic": "Vasculature",
+                        "civic": "Utilities",
+                        "mythological": "Hera",
+                        "professional": "Caretaker",
+                        "fantastic": "?",
+                        "aesthetic": "?",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Festivity",
+                        "anatomic": "Pancreas?",
+                        "civic": "Entertainment",
+                        "mythological": "Dionysus",
+                        "professional": "Entertainer",
+                        "fantastic": "Minstrel",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Stamina",
+                        "anatomic": "Intestines",
+                        "civic": "Agriculture",
+                        "mythological": "Demeter",
+                        "professional": "Farmer",
+                        "fantastic": "Druid",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Inspiration",
+                        "anatomic": "Respiratory",
+                        "mythological": "Zephyrus",
+                        "professional": "Gardener",
+                        "fantastic": "Solarpunk",
+                        "description": ""
+                    },
+                    {
+                        "attribute": "Regeneration",
+                        "anatomic": "Lymphae",
+                        "civic": "Hospitals",
+                        "mythological": "Panacea",
+                        "professional": "Nurse",
+                        "fantastic": "Medic?",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Clarity",
+                        "anatomic": "Nephron",
+                        "civic": "Hygiene",
+                        "mythological": "Hygeia",
+                        "professional": "Custodian",
+                        "fantastic": "?",
+                        "description": "..."
+                    }
+                ]
+            },
+            {
+                "anatomic": "Spiritual",
+                "civic": "Cultural",
+                "function": "Spirit",
+                "element": "Aether",
+                "attributes": [
+                    {
+                        "attribute": "Charisma",
+                        "anatomic": "?",
+                        "civic": "Theater",
+                        "mythological": "Apollo",
+                        "professional": "Performer",
+                        "fantastic": "Bard",
+                        "aesthetic": "Drama",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Competition",
+                        "anatomic": "Sympathetic",
+                        "civic": "Sports",
+                        "mythological": "Nike",
+                        "professional": "Athlete",
+                        "fantastic": "?",
+                        "description": ""
+                    },
+                    {
+                        "attribute": "Adventure",
+                        "anatomic": "?",
+                        "civic": "Gaming",
+                        "mythological": "?",
+                        "professional": "Gamer",
+                        "fantastic": "Explorer",
+                        "description": ""
+                    },
+                    {
+                        "attribute": "Beauty",
+                        "anatomic": "Reproductive System",
+                        "civic": "Energy",
+                        "mythological": "Aphrodite",
+                        "professional": "?",
+                        "fantastic": "Enchantress",
+                        "aesthetic": "Romance",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Magic",
+                        "anatomic": "Unconscious",
+                        "civic": "Artifice",
+                        "mythological": "Hecate",
+                        "professional": "Artist",
+                        "fantastic": "Sorcerer",
+                        "aesthetic": "Surreality",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Constitution",
+                        "anatomic": "Connective Tissue",
+                        "civic": "Religious",
+                        "mythological": "?",
+                        "professional": "Priest",
+                        "fantastic": "Priest",
+                        "description": "..."
+                    }
+                ]
+            },
+            {
+                "anatomic": "Cognitive",
+                "civic": "Governmental",
+                "function": "Information",
+                "element": "Air",
+                "attributes": [
+                    {
+                        "attribute": "Volition",
+                        "anatomic": "Central Nervous System",
+                        "civic": "Execution",
+                        "mythological": "Jupiter",
+                        "professional": "Administrator",
+                        "fantastic": "?",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Dexterity",
+                        "anatomic": "?",
+                        "civic": "Legislation",
+                        "mythological": "Athena",
+                        "professional": "Strategist",
+                        "fantastic": "Tactician",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Intelligence",
+                        "anatomic": "?",
+                        "civic": "Science",
+                        "mythological": "Hephaestus",
+                        "professional": "Researcher",
+                        "fantastic": "Technomancer",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Wisdom",
+                        "anatomic": "Memory",
+                        "civic": "Academia",
+                        "mythological": "Chiron",
+                        "professional": "Scholar",
+                        "fantastic": "Wizard",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Intuition",
+                        "anatomic": "Sensation",
+                        "civic": "Media",
+                        "mythological": "Iris",
+                        "professional": "Journalist",
+                        "fantastic": "Scout",
+                        "description": "..."
+                    },
+                    {
+                        "attribute": "Justice",
+                        "anatomic": "?",
+                        "mythological": "Hades",
+                        "professional": "Lawyer",
+                        "fantastic": "?",
+                        "description": ""
+                    }
+                ]
+            }
+        ])
     }
 
     const getSpaces = () => {

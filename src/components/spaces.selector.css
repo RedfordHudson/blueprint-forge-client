@@ -1,0 +1,132 @@
+.pentagon {
+    transform: rotate(30 30 30);
+    transition: transform 1s;
+    transition: fill 1s;
+}
+
+.pentagon:hover {
+    transform: rotate(30 30 30);
+    fill: red;
+}
+
+/* ======= */
+
+.navbar {
+    position:absolute;
+
+    /* box-sizing: border-box; */
+    left:10vw;
+    width:80vw;
+    
+    border:10px solid black;
+
+    display: flex;
+}
+
+#primaryNavbar {
+    /* top:10vh; */
+}
+
+#secondaryNavbar {
+    top:5vh;
+}
+
+.navbar > li {
+    box-sizing: border-box;
+    border: 5px solid black;
+
+    height:5vh;
+    background: linear-gradient(rgb(146, 153, 179), rgb(255, 255, 255));
+
+    flex: 1;
+}
+
+.navbar > li.selected {
+    background: linear-gradient(rgb(0, 55, 255), rgb(255, 255, 255));
+}
+
+.navbar > li > p {
+    /* padding:1vw 1vh; */
+    text-align: center;
+    font-weight: bold;
+    font-size: 1em;
+    margin:0;
+}
+
+.navbar > li:hover {
+    background: linear-gradient(rgb(0, 255, 60), rgb(255, 255, 255));
+    cursor: pointer;
+}
+
+.card-container {
+    text-align: center;
+    font-size: 2em;
+
+    border: 5px solid black;
+    border-radius: 10%;
+    width: 20vw;
+    height:30vh;
+    
+    position:relative;
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    cursor:move;
+}
+
+.card-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  
+    opacity: .8;
+}
+
+.card-content > * {
+    display:block;
+    margin: .3em auto;
+}
+
+.card-content > textarea:first-child {
+    width:100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.details {
+    visibility: hidden;
+    position: absolute;
+    box-sizing: border-box;
+
+    border: 5px solid black;
+
+    display: flex;
+    flex-direction: column;
+    width:20vw;
+
+    z-index: 3;
+}
+
+.details > li {
+    display: flex;
+    border: 2px solid black;
+    height:20px;
+    background-color: rgb(49, 49, 49);
+}
+
+.details > li > * {
+    font-size:10px;
+    /* height:20px; */
+}
+
+.details > li > p {
+    flex: 1; width:4vw;
+    margin: auto auto;
+    color:white
+}
+.details > li > textarea {
+    flex: 3;
+    border: 3px solid black;
+}

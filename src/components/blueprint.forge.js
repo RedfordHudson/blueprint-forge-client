@@ -397,7 +397,7 @@ function BlueprintForge() {
             // ref={nodesRef}
             >
             <div id='frame-div'>
-                <Link className='frame' to={'/'} id={'back'}
+                <Link className='frame' to={'/blueprints'} id={'back'}
                     state={{ category }}
                     >Back</Link>
                 <button id='save' className='frame' 

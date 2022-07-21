@@ -100,6 +100,15 @@ function SpacesSelector() {
                         "professional": "Spy",
                         "fantastic": "Archer",
                         "description": "..."
+                    },
+                    {
+                        "attribute": "Constitution",
+                        "anatomic": "Connective Tissue",
+                        "civic": "Religious",
+                        "mythological": "?",
+                        "professional": "Priest",
+                        "fantastic": "Priest",
+                        "description": "..."
                     }
                 ]
             },
@@ -292,12 +301,12 @@ function SpacesSelector() {
                         "description": "..."
                     },
                     {
-                        "attribute": "Constitution",
-                        "anatomic": "Connective Tissue",
-                        "civic": "Religious",
-                        "mythological": "?",
-                        "professional": "Priest",
-                        "fantastic": "Priest",
+                        "attribute": "Mystery",
+                        "anatomic": "?",
+                        "civic": "?",
+                        "mythological": "Hecate",
+                        "professional": "?",
+                        "fantastic": "Fortune Teller",
                         "description": "..."
                     }
                 ]

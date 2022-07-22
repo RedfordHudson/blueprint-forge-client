@@ -452,9 +452,10 @@ function ClassGallery() {
             'Enemy',
             'Space',
             'Service',
-            'Equippable',
             'Event',
+            'Equippable',
             'Consumable',
+            'Collectible'
         ])
     }
 

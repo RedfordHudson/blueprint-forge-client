@@ -75,9 +75,12 @@
     z-index: 1;
 }
 
-.card-container:hover {
-    width:22vw;
-    height:22vh;
+.card-container:hover > * {
+    /* width:22vw;
+    height:22vh; */
+    /* box-shadow: 10px #0ff; */
+    
+    box-shadow: 0 10px 15px rgb(91, 17, 113);
 }
 
 .card-container > * {

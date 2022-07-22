@@ -448,11 +448,12 @@ function ClassGallery() {
     const getTypes = () => {
         updateTypes([
             // 'Quest',
-            'Space',
-            'Event',
             'Player',
             'Enemy',
+            'Space',
+            'Service',
             'Equippable',
+            'Event',
             'Consumable',
         ])
     }

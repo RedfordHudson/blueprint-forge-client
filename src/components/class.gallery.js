@@ -667,6 +667,7 @@ function ClassGallery() {
     }
 
     return ( <>
+        <Link to='/spaces'>Spaces</Link>
         {elementNavbar()}
         {fieldNavbar()}
         <div id='container'>

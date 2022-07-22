@@ -219,7 +219,7 @@ li {
     height:100px;
 }
 
-textarea, button, .frame {
+textarea, button, .frame, .link {
     border:5px solid rgb(0, 0, 0);
     background-color: rgb(71, 71, 71);
     color:white;
@@ -237,7 +237,7 @@ textarea {
     overflow:hidden;
 }
 
-textarea:hover, button:hover, .frame:hover {
+textarea:hover, button:hover, .frame:hover, .link:hover {
     border:5px solid rgb(0, 5, 142);
     background-color: rgb(0, 71, 178);
 }

@@ -1,24 +1,33 @@
 import axios from 'axios';
 import './spaces.selector.css';
 
-// import { useLocation, Link, Route } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-function SpacesSelector() {
+function ClassGallery() {
     
     // === [ Constants ] ===
+
+    const location = useLocation();
+
+    const {element,field,type} = location?.state || {};
 
     // const URL = 'http://localhost:3001/';
     const URL = 'https://blueprint-forge-server.herokuapp.com/';
     const expressBuffer = 25;
 
     const [elements, updateElements] = useState(() => {return []})
-    const [spaces, updateSpaces] = useState(() => {return []})
+    const [classes, updateClasses] = useState(() => {return []})
+    const [types, updateTypes] = useState(() => {return []})
 
-    const [currentElement, updateCurrentElement] = useState(() => {return 'Energy'}); 
-    const [currentAttribute, updateCurrentAttribute] = useState(() => {return 'Strength'}); 
+    const [currentElement, updateCurrentElement] = useState(() => {
+        return element?element:'Energy'}); 
+    const [currentAttribute, updateCurrentAttribute] = useState(() => {
+        return field?field:'Strength'}); 
+    const [currentType, updateCurrentType] = useState(() => {
+        return type?type:'Player'}); 
 
-    const [draggedSpace, updateDraggedSpace] = useState(() => {return ''}); 
+    const [draggedClass, updateDraggedClass] = useState(() => {return ''}); 
 
     // const polygonObj = useRef();
 
@@ -26,21 +35,10 @@ function SpacesSelector() {
 
     useEffect(() => {
         getElements();
-        getSpaces();
-
-        // polygonObj.addEventListener('click',() => {
-        //     console.log('click')
-        // })
+        getTypes();
+        getClasses();
     // eslint-disable-next-line 
     },[]);
-
-    useEffect(() => {
-        const name = elements.filter(element => element.function === currentElement)[0]?.attributes[0]?.attribute
-
-        // console.log(name)
-
-        updateCurrentAttribute(name ? name : 'Strength')
-    },[elements, currentElement])
 
     const getElements = () => {
         // axios.get(URL+'elements')
@@ -447,16 +445,28 @@ function SpacesSelector() {
         ])
     }
 
-    const getSpaces = () => {
-        axios.get(URL+'spaces')
-            .then(spaces => {
-                updateSpaces(spaces.data);
+    const getTypes = () => {
+        updateTypes([
+            // 'Quest',
+            'Space',
+            'Event',
+            'Player',
+            'Enemy',
+            'Equippable',
+            'Consumable',
+        ])
+    }
+
+    const getClasses = () => {
+        axios.get(URL+'classes')
+            .then(classes => {
+                updateClasses(classes.data);
             })
     }
     
     // === [ DOM ] ===
 
-    const primaryNavbar = () => {
+    const elementNavbar = () => {
         return <ul id='primaryNavbar'
             className='navbar'>
             { elements.map(element => {
@@ -479,7 +489,7 @@ function SpacesSelector() {
         </ul>
     }
 
-    const secondaryNavbar = () => {
+    const fieldNavbar = () => {
         const attributes = elements.filter(element => element.function === currentElement)[0]?.attributes;
 
         if (attributes === undefined) return;
@@ -502,7 +512,7 @@ function SpacesSelector() {
                     onDrop={(e) => {
                         e.preventDefault();
 
-                        updateSpaceAttribute()
+                        updateClassField()
                     }}     
                     >
                     <p>{name}</p>
@@ -511,106 +521,145 @@ function SpacesSelector() {
         </ul>
     }
 
-    const loadSpaces = () => {
-        if (!spaces.length) {return '';}
+    const typeNavbar = () => {
+        return <ul id='tertiaryNavbar'
+            className='navbar'>
+            { types.map(type => {
+                return <li id={'type-'+type}
+                    key={'type-'+type}
+                    className={type === currentType ? 'selected' : ''}
+                    onClick={() => updateCurrentType(type)}
+                    
+                    onDragOver={(e) => {
+                        e.preventDefault()
 
-        let currentSpaces = spaces.filter(space => space.attribute === currentAttribute);
+                        updateCurrentType(e.target.innerText)
+                    }}
+                    onDrop={(e) => {
+                        e.preventDefault();
 
-        return currentSpaces.map(space => {
-            const {name} = space;
+                        updateClassType()
+                    }}     
+                    >
+                    <p>{type}</p>
+                </li>
+            }) }
+        </ul>
+    }
+
+    const loadClasses = () => {
+        if (!classes.length) {return '';}
+
+        let currentClasses = classes.filter(classItem => classItem.field===currentAttribute && classItem.type===currentType);
+
+        return currentClasses.map(classItem => {
+            const {name,picture_URL,_id,description,associationList} = classItem;
 
             return <div
-                id={'space-'+name}
-                key={'space-'+name}
+                id={'class-'+name}
+                key={'class-'+name}
                 className='card-container'
-                // style={{backgroundImage: 'url('+ (space.picture_URL) +')'}}
                 
                 draggable='true'
                 onDragStart={() => {
-                    updateDraggedSpace(space);
+                    updateDraggedClass(classItem);
                 }}
                 >
+                    <div className='card-title'>{name}</div>
                     <img className='card-image'
-                        src={space.picture_URL}
+                        src={picture_URL}
                         alt=''/>
+                    <div className='card-background' />
+                    <div className='card-description'>{description}</div>
                     <div className='card-content'>
-                        <p>{name}</p>
+                        <Link className='link'
+                            to={
+                            (currentType==='quest')?'/blueprints':'/class'
+                        }
+                            state={{
+                                classId:_id,
+                                associationList,
+                                element:currentElement,
+                                field:currentAttribute,
+                                type:currentType,
+                                classType:name
+                            }}>Expand</Link>
                         <button onClick={(e) => {
                             const state = e.target.nextElementSibling.style.visibility;
                             e.target.nextElementSibling.style.visibility = (!state || state === 'hidden') ? 'visible' : 'hidden'
                         }}
                         >Details</button>
                         <ul className='details'>
-                            {loadSpaceDetails(space)}
+                            {loadClassDetails(classItem)}
                             
                             <button onClick={(e) => {
-                                updateSpace(space)
+                                updateClass(classItem)
                                 e.target.parentElement.style.visibility = 'hidden'   
                             }}>Save</button>
+                            <button onClick={() => deleteClass(classItem)}>Delete</button>
                         </ul>
-                        <button onClick={() => deleteSpace(space)}>Delete</button>
                     </div>
                 </div>
         })
     }
 
-    const updateSpaceAttribute = () => {
-        draggedSpace.element = currentElement;
-        draggedSpace.attribute = currentAttribute;
+    const updateClassField = () => {
+        draggedClass.element = currentElement;
+        draggedClass.field = currentAttribute;
 
-        axios.patch(URL+'spaces/update', draggedSpace)
-            .then(() => {setTimeout(getSpaces,expressBuffer)});
+        axios.patch(URL+'classes/update', draggedClass)
+            .then(() => {setTimeout(getClasses,expressBuffer)});
     }
 
-    const updateSpace = (space) => {
-        console.log('saving '+space._id)
-        axios.patch(URL+'spaces/update', space)
-            .then(() => {setTimeout(getSpaces,expressBuffer)});
+    const updateClassType = () => {
+        draggedClass.type = currentType;
+
+        axios.patch(URL+'classes/update', draggedClass)
+            .then(() => {setTimeout(getClasses,expressBuffer)});
     }
 
-    const deleteSpace = (space) => {
-        axios.delete(URL+'spaces/delete/'+space._id)
-            .then(() => {setTimeout(getSpaces,expressBuffer)});
+    const updateClass = (classItem) => {
+        axios.patch(URL+'classes/update', classItem)
+            .then(() => {setTimeout(getClasses,expressBuffer)});
     }
 
-    const loadSpaceDetails = (space) => {
-        return ['name'].concat(Object.keys(space).slice(4,Object.keys(space).length-1)).map(property => {
-            return <li key={'space-property-'+property}>
+    const deleteClass = (classItem) => {
+        axios.delete(URL+'classes/delete/'+classItem._id)
+            .then(() => {setTimeout(getClasses,expressBuffer)});
+    }
+
+    const loadClassDetails = (classItem) => {
+        return ['name','picture_URL','description'].map(property => {
+            return <li key={'class-property-'+property}>
                 <p>{property}</p>
                 <textarea type='text'
-                    defaultValue={space[property]}
+                    defaultValue={classItem[property]}
                     onChange={(e) => { 
-                        space[property] = e.target.value;
+                        classItem[property] = e.target.value;
                     }} />
             </li>
         })
 
     }
     
-    const loadAddSpace = () => {
+    const loadAddClass = () => {
         return <div id={'add'}
-            key={'space-_add'}
+            key={'class-_add'}
             className='card'
             onClick={() => {
-                const newSpace = {
-                    name:'New Space',
+                const newClass = {
                     element:currentElement,
-                    attribute:currentAttribute,
+                    field:currentAttribute,
+                    type:currentType,
+                    name:'New Class',
+                    associationList:[],
+                    details: {},
                     picture_URL:'',
-                    keeper:'',
-                    schedule:'',
-                    address:'',
-                    website:'',
-                    email:'',
-                    phone:'',
-                    instagram:'',
-                    twitter:'',
-                    linkedin:'',
-                    notes:''
+                    description:'Description'
                 }
 
-                axios.post(URL+'spaces/add', newSpace)
-                .then(() => {setTimeout(getSpaces,expressBuffer)});
+                axios.post(URL+'classes/add', newClass)
+                .then(() => {setTimeout(getClasses,expressBuffer)});
             }}
             >
             {'+'}
@@ -618,39 +667,14 @@ function SpacesSelector() {
     }
 
     return ( <>
-        {primaryNavbar()}
-        {secondaryNavbar()}
+        {elementNavbar()}
+        {fieldNavbar()}
         <div id='container'>
-            {loadSpaces()}
-            {loadAddSpace()}
+            {loadClasses()}
+            {loadAddClass()}
         </div>
+        {typeNavbar()}
     </>);
-
-    /*
-    return ( <div id='container'>
-        
-        
-        <svg ref={polygonObj}>
-            <polygon
-                
-                points='60 13,110 48,92, 110,30 110,13 48'
-                stroke='violet'
-                strokeWidth='5'
-                fill='orange'
-                style={{
-                    // transform: 'rotate(-10 50 100)'
-                }}
-                onClick={(e) => {
-                    e.target.style.transform = 'rotate(-10 50 100)'
-                    console.log(e.target.style.transform)
-                }}
-                // transform="rotate(-10 50 100)"
-                className='pentagon'>
-
-            </polygon>
-        </svg>
-    </div> );
-    */
 }
  
-export default SpacesSelector;
+export default ClassGallery;

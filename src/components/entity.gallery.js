@@ -100,7 +100,7 @@ function EntityGallery() {
             class:classType,
             name:'New Entity',
             picture_URL:'',
-            description:'',
+            description:'Description',
             details:{
                 keeper:'',
                 schedule:'',

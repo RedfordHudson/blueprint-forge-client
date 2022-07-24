@@ -2,19 +2,16 @@ import { Link } from 'react-router-dom';
 import './nexus.css';
 
 function Nexus() {
-    
-    
-
     return ( <>
         <div id='container'>
 
         <Link className='portal'
-                to='/blueprints'>
-                    Blueprints
+                to='/inventory'>
+                    Inventory
             </Link>
             <Link className='portal'
-                to='/spaces'>
-                    Spaces
+                to='/quests'>
+                    Quest Feed
             </Link>
 
         </div>

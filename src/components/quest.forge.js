@@ -1,45 +1,27 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation, Link } from 'react-router-dom';
 import './blueprints.css';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css'
 
-function BlueprintForge() {
+function QuestForge() {
 
     // === [ Constants ] ===
 
     const location = useLocation();
-    const URL = 'https://blueprint-forge-server.herokuapp.com/blueprints/';
+    // const URL = 'http://localhost:3001/';
+    const URL = 'https://embryonia-server.herokuapp.com/';
     // const timeoutLength = 2000;
     
-    const category = location.state.category;
+    const {classId: id,element,field,origin} = location.state;
 
-    const [blueprintName, saveBlueprintName] = useState(() => {return location.state.name});
-
-    const [addFlag, disableAddFlag] = useState(() => {return blueprintName === '_add'});
-    const [blueprint, updateBlueprint] = useState(() => {return []});
+    const [quest, updateQuest] = useState(() => {return []});
 
     // === [ Framework ] ===
-
-    const nameInputRef = useRef();
-    
-    const nameTextField = () => {
-        const name = blueprint?.name;
-
-        return <input type='text'
-            id='name'
-            className='frame'
-            ref={nameInputRef}
-            value={name ? name : '...'}
-            onChange={(e) => {
-                updateBlueprint({
-                    ...blueprint,
-                    name:e.target.value
-                })
-            }} />
-    }
     
     useEffect(() => {
-        getBlueprint(blueprintName)
+        getQuest()
         
         /*
         window.addEventListener('resize',handleResize);
@@ -55,73 +37,31 @@ function BlueprintForge() {
         }
         */
     // eslint-disable-next-line
-    }, [blueprintName])
+    }, [])
 
     /*
     const handleResize = () => {
-        setTimeout(() => {updateBlueprint(blueprint)},timeoutLength)
+        setTimeout(() => {updateQuest(quest)},timeoutLength)
         // console.log(window.innerWidth);
     }*/
 
-    // === [ MongoDB ] ===
+    // === [ Framework ] ===
 
-    const getBlueprint = (name) => {
-
-        if (name === '_add') { // create blueprint
-            updateBlueprint({
-                name: 'New Blueprint',
-                complete: false,
-                category,
-                priority: 3,
-                series: [
-                    {
-                        object:'start',
-                        function:'Begin Adventure',
-                        complete:false
-                    },{
-                        object:'Intermediary State',
-                        function:'Complete Adventure',
-                        complete:false
-                    }
-                ]
-            })
-
-        } else { // fetch blueprint
-            axios.get(URL+name)
-                .then(response => updateBlueprint(response.data[0]))
-                // .catch(error => console.error('ERROR: '+error));
-        }
-
+    const getQuest = () => {
+        axios.get(URL+'quests/'+id)
+            .then(quest => updateQuest(quest.data))
+            .catch(error => console.error('ERROR: '+error));
     }
 
-    const saveBlueprint = () => {
-
-        // handle name
-        //    can't be name that already exists
-        // (I think) no question marks
-
-        if (addFlag) { // add blueprint
-            disableAddFlag(false);
-
-            axios.post(URL+'add',blueprint).then(() => {
-                // after schema is added to database ->
-                //      after 1000ms ->
-                //          retrieve schema from database
-                setTimeout(() => {
-                    saveBlueprintName(blueprint.name);
-                },1000)
-            })
-        } else { // save blueprint by ID
-            axios.patch(URL+'update/'+blueprint._id,blueprint);
-        }
+    const saveQuest = () => {
+        console.log(id)
+        axios.patch(URL+'quests/updateSeries/'+id,{series:quest.series});
     }
 
-    // === [ Objects ] ===
+    // === [ Nodes ] ===
 
     const loadFunctionBranch = (series,prefix) => {
         if (!series) {return;}
-
-        // console.log(blueprint);
 
         return <ul className='function_series'
             style={{justifyContent:'space-around'}}
@@ -146,6 +86,12 @@ function BlueprintForge() {
                                         field.style.height = ''+height+'px';
                                     }}
                                     />
+                                <DatePicker selected={Date.parse(node.deadline)}
+                                    minDate={new Date()}
+                                    isClearable
+                                    className='date-picker'
+                                    onChange={date => editDeadline(date,identifier)}/>
+                               
                                 {addCompleteButton(node,series,identifier)}
                                 {addButtons(node,identifier,series)}
                             </li>
@@ -180,7 +126,7 @@ function BlueprintForge() {
             
             // skip if previous node AT ROOT is incomplete
             
-            let root = blueprint.series;
+            let root = quest.series;
             for (let i = 1; i < len-2; i+=2) {
                 root = root[indices[i-1]].parallel[indices[i]].series;}
             if (!root[indices[len-3]-1].complete) {return;}
@@ -205,7 +151,7 @@ function BlueprintForge() {
         const index = indices[indices.length-1]
 
         // last element -> none
-        if (indices[0] === blueprint.series.length-1) {return <div/>;}
+        if (indices[0] === quest.series.length-1) {return;}
 
         // first element || both adjacent elements are branches -> chain
         else if (!indices[0] || (
@@ -231,17 +177,30 @@ function BlueprintForge() {
         return regexp.exec(id)[0].split('_').map(i => parseInt(i)).filter(s => !isNaN(s));   
     }
 
+    const editDeadline = (date, identifier) => {
+        const indices = identifier.split('_').map(i => parseInt(i)).filter(s => !isNaN(s));   
+
+        let newQuest = {...quest}
+        let node = newQuest.series[indices[0]]
+
+        for (let i = 1; i < indices.length; i+=2) {
+            node = node.parallel[indices[i]].series[indices[i+1]];}
+
+        node.deadline = date ? date.toDateString() : date;
+        updateQuest(newQuest)
+    }
+
     const editFunction = (e) => {
         const indices = getIndices(e);
 
-        let newBlueprint = {...blueprint}
-        let node = newBlueprint.series[indices[0]]
+        let newQuest = {...quest}
+        let node = newQuest.series[indices[0]]
 
         for (let i = 1; i < indices.length; i+=2) {
             node = node.parallel[indices[i]].series[indices[i+1]];}
 
         node.function = e.target.value;
-        updateBlueprint(newBlueprint)
+        updateQuest(newQuest)
     }
 
     const chainFunction = (e) => {
@@ -249,31 +208,31 @@ function BlueprintForge() {
 
         const newNode = {
             function:'',
-            object:'',
+            deadline:null,
             complete:false
         }
 
-        let newBlueprint = {...blueprint};
-        let series = newBlueprint.series
+        let newQuest = {...quest};
+        let series = newQuest.series
 
         for (let i = 1; i < indices.length; i+=2) {
             series = series[indices[i-1]].parallel[indices[i]].series;}
 
         series.splice(indices[indices.length-1]+1,0,newNode);
         
-        // blueprint state -> objects DOM
-        updateBlueprint(newBlueprint)
+        // quest state -> objects DOM
+        updateQuest(newQuest)
 
         // nodes DOM reference -> SVG, functions DOM
-        // setTimeout(() => {updateBlueprint(newBlueprint)},timeoutLength)
+        // setTimeout(() => {updateQuest(newQuest)},timeoutLength)
     }
 
     const branchFunction = (e) => {
         const indices = getIndices(e,true); // use id for parent element
         const len = indices.length;
 
-        let newBlueprint = {...blueprint};
-        let root = newBlueprint.series;
+        let newQuest = {...quest};
+        let root = newQuest.series;
 
         for (let i = 1; i < len-2; i+=2) {
             root = root[indices[i-1]].parallel[indices[i]].series;}
@@ -291,7 +250,7 @@ function BlueprintForge() {
                     complete: false,
                     series: [{
                         function:'',
-                        object:'',
+                        deadline:null,
                         complete:false
                     }] 
                 }
@@ -309,7 +268,7 @@ function BlueprintForge() {
                         complete: false,
                         series: [{
                             function:'',
-                            object:'',
+                            deadline:null,
                             complete:false
                         }] 
                     }
@@ -319,19 +278,19 @@ function BlueprintForge() {
             series.splice(index,1,newNode);
         }
 
-        // blueprint state -> objects DOM
-        updateBlueprint(newBlueprint)
+        // quest state -> objects DOM
+        updateQuest(newQuest)
 
         // nodes DOM reference -> SVG, functions DOM
-        // setTimeout(() => {updateBlueprint(newBlueprint)},timeoutLength)
+        // setTimeout(() => {updateQuest(newQuest)},timeoutLength)
     }
 
     const deleteFunction = (e) => {
         const indices = getIndices(e,true); // use id for parent element
         const len = indices.length;
 
-        let newBlueprint = {...blueprint};
-        let root = newBlueprint.series;
+        let newQuest = {...quest};
+        let root = newQuest.series;
 
         for (let i = 1; i < len-2; i+=2) {
             root = root[indices[i-1]].parallel[indices[i]].series;}
@@ -355,19 +314,19 @@ function BlueprintForge() {
                 root[indices[len-3]].complete = true;}
         }
 
-        // blueprint state -> objects DOM
-        updateBlueprint(newBlueprint);
+        // quest state -> objects DOM
+        updateQuest(newQuest);
 
         // nodes DOM reference -> SVG, functions DOM
-        // setTimeout(() => {updateBlueprint(newBlueprint)},timeoutLength)
+        // setTimeout(() => {updateQuest(newQuest)},timeoutLength)
     }
 
     const completeFunction = (e) => {
         const indices = getIndices(e,true); // use id for parent element
         const len = indices.length;
 
-        let newBlueprint = {...blueprint};
-        let root = newBlueprint;
+        let newQuest = {...quest};
+        let root = newQuest;
         let seriesContainer = root;
 
         if (len > 1) {
@@ -389,7 +348,7 @@ function BlueprintForge() {
         if (len > 1 && root.parallel.every(container => container.complete)) {
             root.complete = true;}
 
-        updateBlueprint(newBlueprint)
+        updateQuest(newQuest)
     }
 
     return (
@@ -397,16 +356,21 @@ function BlueprintForge() {
             // ref={nodesRef}
             >
             <div id='frame-div'>
-                <Link className='frame' to={'/blueprints'} id={'back'}
-                    state={{ category }}
-                    >Back</Link>
-                <button id='save' className='frame' 
-                    onClick={saveBlueprint} >Save</button>
+                <Link id='back'
+                    to={'/'+origin}
+                    state={{
+                        element,
+                        field,
+                        type:'Quest'
+                    }}>Back</Link>
+                <p type='text'
+                    >{quest?.name}</p>
+                <button id='save'
+                    onClick={saveQuest} >Save</button>
             </div>
-            {nameTextField()}
             
-            {loadFunctionBranch(blueprint?.series,'')}
-            {/* <ul id='objects'>{this.tryObjectBranch(blueprint.series)}</ul> */}
+            {loadFunctionBranch(quest?.series,'')}
+            {/* <ul id='objects'>{this.tryObjectBranch(quest.series)}</ul> */}
             <svg>
                 <path 
                     stroke='black'
@@ -458,16 +422,16 @@ function BlueprintForge() {
     const tryPath = () => {
         return '';
         
-        if ( !( blueprint.nodes && getReference([]) ) ) {return '';}
+        if ( !( quest.nodes && getReference([]) ) ) {return '';}
         
-        // return getPath(blueprint.nodes,[])
+        // return getPath(quest.nodes,[])
 
         try {
             console.log('##SUCCESS: Loading Edges')
-            return getPath(blueprint.nodes,[])
+            return getPath(quest.nodes,[])
         } catch (err) {
             console.log('##ERROR: '+err)
-            // console.log(blueprint.nodes);
+            // console.log(quest.nodes);
             // console.log(getReference([]));
             return '';
         }
@@ -532,41 +496,7 @@ function BlueprintForge() {
 
         return pathString;
     }
-
-    // === [ Objects ] ===
-
-    loadFunction(node,coords,identifier) {
-        if (!node || !coords) {return;}
-
-        let xPos = (coords[0]+coords[2])/2
-        let yPos = (coords[1]+coords[3])/2;
-
-        const extendedIdentifier = (identifier === 1) ? 'function_1' : 'function'+identifier;
-
-        return <li className='function'
-            key={extendedIdentifier}
-            id={extendedIdentifier}
-            style={{
-                left:xPos,
-                top:yPos
-            }}
-            ><input type='text'
-            value={node.function}
-            onChange={this.editFunction} /></li>
-    }
-
-    editFunction(e) {
-        let blueprint = {...this.state.blueprint};
-        const indices = this.getIndices(e);
-        let node = blueprint.nodes[indices[0]]
-
-        for (let i = 1; i < indices.length; i+=2) {
-            node = node[indices[i]][indices[i+1]];}
-
-        node.function = e.target.value;
-        this.setState({blueprint:blueprint});
-    }
     */
 }
  
-export default BlueprintForge;
+export default QuestForge;

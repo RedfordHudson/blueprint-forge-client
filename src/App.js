@@ -1,11 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-// import Nexus from './components/nexus';
-import ClassGallery from './components/class.gallery';
-import EntityGallery from './components/entity.gallery';
-import BlueprintSelector from './components/blueprint.selector';
-import BlueprintForge from './components/blueprint.forge';
-import SpacesSelector from './components/spaces.selector';
+import Nexus from './components/nexus';
+import Inventory from './components/inventory';
+import QuestFeed from './components/quest.feed';
+import QuestForge from './components/quest.forge';
 
 function App() {
   return (
@@ -14,12 +12,10 @@ function App() {
 
         <BrowserRouter>
           <Routes>
-            <Route path='/' element={<ClassGallery />} />
-            <Route path='/class' element={<EntityGallery />} />
-            {/* <Route path='/' element={<Nexus />} /> */}
-            <Route path='/blueprints' element={<BlueprintSelector />} />
-            <Route path='/blueprint/:name' element={<BlueprintForge />} />
-            <Route path='/spaces' element={<SpacesSelector />} />
+            <Route path='/' element={<Nexus />} />
+            <Route path='/inventory' element={<Inventory />} />
+            <Route path='/quests' element={<QuestFeed />} />
+            <Route path='/questForge' element={<QuestForge />} />
               
           </Routes>
         </BrowserRouter>

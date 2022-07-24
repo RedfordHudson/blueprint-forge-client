@@ -94,6 +94,10 @@
     font-size: .8em;
 }
 
+.primed > * {
+    color: yellow;
+}
+
 .card-background {
     position:absolute;
     top:4vh;
@@ -150,4 +154,16 @@
 
 .back {
     z-index: 10;
+}
+
+#tertiaryNavbar > li {
+    position:relative;
+}
+
+.type-icon {
+    z-index: 10;
+    height:1em;
+    position:absolute;
+    width:100%;
+    top:0;
 }

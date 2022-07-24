@@ -12,7 +12,7 @@ body {
 #container, #navbar {
     position:absolute;
 
-    /* box-sizing: border-box; */
+    box-sizing: border-box;
     left:10vw;
     height:10vh;
     width:80vw;
@@ -100,9 +100,6 @@ body {
     border:5px solid rgb(0, 5, 142);
     background-color: rgb(0, 71, 178);
     font-size: 8em;
-}
-
-#add {
     color:white;
     text-decoration: none;
 }
@@ -219,7 +216,15 @@ li {
     height:100px;
 }
 
-textarea, button, .frame, .link {
+textarea {
+    font-size:1em;
+    width:7vw;
+
+    resize:none;
+    overflow:hidden;
+}
+
+textarea, button, .link, #frame-div > * {
     border:5px solid rgb(0, 0, 0);
     background-color: rgb(71, 71, 71);
     color:white;
@@ -229,15 +234,7 @@ textarea, button, .frame, .link {
     box-shadow: 2px 2px #000000;
 }
 
-textarea {
-    font-size:1em;
-    width:7vw;
-
-    resize:none;
-    overflow:hidden;
-}
-
-textarea:hover, button:hover, .frame:hover, .link:hover {
+textarea:hover, button:hover, .link:hover, #frame-div > *:hover {
     border:5px solid rgb(0, 5, 142);
     background-color: rgb(0, 71, 178);
 }
@@ -246,29 +243,12 @@ button:hover {
     cursor: pointer;
 }
 
-#name {
-    position:absolute;
-    box-sizing: border-box;
-
-    left:15vw;
-    width:50vw;
-
-    /* top:5vh; */
-    height:8vh;
-
-    font-size: 2em;
-    text-align: center;
-    z-index:3;
-}
-
 #frame-div {
     position:absolute;
     box-sizing: border-box;
 
-    /* background-color: white; */
-
-    left:35vw;
-    width:10vw;
+    width:30vw;
+    margin: 0 auto;
 
     top: -5vh;
     height:5vh;
@@ -279,10 +259,8 @@ button:hover {
     z-index: 10;
 }
 
-.frame > p {
-    font-size:1em;
-    position:relative;
-    width:5vw;
+#frame-div > * {
+    height:5vh;
 }
 
 svg {

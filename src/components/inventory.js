@@ -4,28 +4,33 @@ import './spaces.selector.css';
 import { useLocation, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-function ClassGallery() {
+import * as Icon from 'react-icons/ti';
+import * as Icon2 from 'react-icons/im';
+import * as GI from 'react-icons/gi';
+
+function Inventory() {
     
     // === [ Constants ] ===
 
     const location = useLocation();
-
     const {element,field,type} = location?.state || {};
 
     // const URL = 'http://localhost:3001/';
-    const URL = 'https://blueprint-forge-server.herokuapp.com/';
+    const URL = 'https://embryonia-server.herokuapp.com/';
     const expressBuffer = 25;
 
     const [elements, updateElements] = useState(() => {return []})
-    const [classes, updateClasses] = useState(() => {return []})
     const [types, updateTypes] = useState(() => {return []})
+    
+    const [classes, updateClasses] = useState(() => {return []})
+    const [quests, updateQuests] = useState(() => {return []})
 
     const [currentElement, updateCurrentElement] = useState(() => {
         return element?element:'Energy'}); 
     const [currentAttribute, updateCurrentAttribute] = useState(() => {
         return field?field:'Strength'}); 
     const [currentType, updateCurrentType] = useState(() => {
-        return type?type:'Player'}); 
+        return type?type:'Quest'}); 
 
     const [draggedClass, updateDraggedClass] = useState(() => {return ''}); 
 
@@ -37,6 +42,7 @@ function ClassGallery() {
         getElements();
         getTypes();
         getClasses();
+        getQuests();
     // eslint-disable-next-line 
     },[]);
 
@@ -446,17 +452,18 @@ function ClassGallery() {
     }
 
     const getTypes = () => {
-        updateTypes([
-            // 'Quest',
-            'Player',
-            'Enemy',
-            'Space',
-            'Service',
-            'Event',
-            'Equippable',
-            'Consumable',
-            'Collectible'
-        ])
+        updateTypes({
+            Quest:<Icon.TiMap className='type-icon'/>,
+            Player:<Icon.TiUserOutline className='type-icon'/>,
+            Enemy:<GI.GiBoneGnawer className='type-icon'/>,
+            Space:<Icon.TiGroupOutline className='type-icon'/>,
+            Service:<Icon.TiCogOutline className='type-icon'/>,
+            Event:<Icon2.ImTicket className='type-icon'/>,
+            Skill:<GI.GiBoltSpellCast className='type-icon'/>,
+            Equippable:<GI.GiBlackKnightHelm className='type-icon'/>,
+            Consumable:<GI.GiApothecary className='type-icon'/>,
+            Collectible:<Icon.TiGift className='type-icon'/>,
+        })
     }
 
     const getClasses = () => {
@@ -465,8 +472,15 @@ function ClassGallery() {
                 updateClasses(classes.data);
             })
     }
+
+    const getQuests = () => {
+        axios.get(URL+'quests')
+            .then(quests => {
+                updateQuests(quests.data);
+            })
+    }
     
-    // === [ DOM ] ===
+    // === [ Framework ] ===
 
     const elementNavbar = () => {
         return <ul id='primaryNavbar'
@@ -526,108 +540,108 @@ function ClassGallery() {
     const typeNavbar = () => {
         return <ul id='tertiaryNavbar'
             className='navbar'>
-            { types.map(type => {
-                return <li id={'type-'+type}
-                    key={'type-'+type}
-                    className={type === currentType ? 'selected' : ''}
-                    onClick={() => updateCurrentType(type)}
+            { Object.entries(types).map(type => {
+                const [key,value] = type;
+
+                return <li id={'type-'+key}
+                    key={'type-'+key}
+                    className={key === currentType ? 'selected' : ''}
+                    onClick={() => updateCurrentType(key)}
                     
                     onDragOver={(e) => {
                         e.preventDefault()
 
-                        updateCurrentType(e.target.innerText)
+                        if (currentType==='Quest') {return;}
+
+                        let id = e.target;
+                        if (id.tagName === 'path') {id = id.parentElement.parentElement}
+                        else if (id.tagName === 'svg') {id = id.parentElement}
+                        id = id.id.split('type-')[1];
+
+                        updateCurrentType(id)
                     }}
                     onDrop={(e) => {
                         e.preventDefault();
+                        
+                        if (currentType==='Quest') {return;}
 
-                        updateClassType()
+                        let id = e.target;
+                        if (id.tagName === 'path') {id = id.parentElement.parentElement}
+                        else if (id.tagName === 'svg') {id = id.parentElement}
+                        id = id.id.split('type-')[1];
+
+                        updateClassType(id)
                     }}     
                     >
-                    <p>{type}</p>
+                    {value}
                 </li>
             }) }
         </ul>
     }
 
-    const loadClasses = () => {
-        if (!classes.length) {return '';}
+    // === [ Content ] ===
 
-        let currentClasses = classes.filter(classItem => classItem.field===currentAttribute && classItem.type===currentType);
+    const loadClasses = () => {
+        let currentClasses = currentType === 'Quest' ? quests : classes;
+        
+        if (!currentClasses.length) {return '';}
+
+        currentClasses = currentClasses.filter(classItem => classItem.field === currentAttribute &&
+            (currentType === 'Quest' || classItem.type === currentType));
 
         return currentClasses.map(classItem => {
-            const {name,picture_URL,_id,description,associationList} = classItem;
+            const {name,picture_URL,description} = classItem;
 
             return <div
                 id={'class-'+name}
                 key={'class-'+name}
-                className='card-container'
-                
+                className={'card-container '+(classItem.status===1?'primed':'')}
                 draggable='true'
                 onDragStart={() => {
-                    updateDraggedClass(classItem);
-                }}
-                >
-                    <div className='card-title'>{name}</div>
-                    <img className='card-image'
-                        src={picture_URL}
-                        alt=''/>
-                    <div className='card-background' />
-                    <div className='card-description'>{description}</div>
-                    <div className='card-content'>
-                        <Link className='link'
-                            to={
-                            (currentType==='quest')?'/blueprints':'/class'
-                        }
-                            state={{
-                                classId:_id,
-                                associationList,
-                                element:currentElement,
-                                field:currentAttribute,
-                                type:currentType,
-                                classType:name
-                            }}>Expand</Link>
+                    updateDraggedClass(classItem);}}>
+
+                <div className='card-title'>{name}</div>
+                <img className='card-image'
+                    src={picture_URL}
+                    alt=''/>
+                <div className='card-background' />
+                <div className='card-description'>{description}</div>
+                <div className='card-content'>
+                    {loadLink(classItem)}
+                    <button onClick={(e) => {
+                        const state = e.target.nextElementSibling.style.visibility;
+                        e.target.nextElementSibling.style.visibility = (!state || state === 'hidden') ? 'visible' : 'hidden'
+                    }}
+                    >Details</button>
+                    <ul className='details'>
+                        {loadClassDetails(classItem)}
+                        {loadClassSpecificDetails(classItem)}
+
                         <button onClick={(e) => {
-                            const state = e.target.nextElementSibling.style.visibility;
-                            e.target.nextElementSibling.style.visibility = (!state || state === 'hidden') ? 'visible' : 'hidden'
-                        }}
-                        >Details</button>
-                        <ul className='details'>
-                            {loadClassDetails(classItem)}
-                            
-                            <button onClick={(e) => {
-                                updateClass(classItem)
-                                e.target.parentElement.style.visibility = 'hidden'   
-                            }}>Save</button>
-                            <button onClick={() => deleteClass(classItem)}>Delete</button>
-                        </ul>
-                    </div>
+                            updateClass(classItem)
+                            e.target.parentElement.style.visibility = 'hidden'   
+                        }}>Save</button>
+                        <button onClick={() => deleteClass(classItem)}>Delete</button>
+                    </ul>
                 </div>
+            </div>
         })
     }
 
-    const updateClassField = () => {
-        draggedClass.element = currentElement;
-        draggedClass.field = currentAttribute;
+    const loadLink = (classItem) => {
+        const {name,_id, associationList} = classItem;
 
-        axios.patch(URL+'classes/update', draggedClass)
-            .then(() => {setTimeout(getClasses,expressBuffer)});
-    }
-
-    const updateClassType = () => {
-        draggedClass.type = currentType;
-
-        axios.patch(URL+'classes/update', draggedClass)
-            .then(() => {setTimeout(getClasses,expressBuffer)});
-    }
-
-    const updateClass = (classItem) => {
-        axios.patch(URL+'classes/update', classItem)
-            .then(() => {setTimeout(getClasses,expressBuffer)});
-    }
-
-    const deleteClass = (classItem) => {
-        axios.delete(URL+'classes/delete/'+classItem._id)
-            .then(() => {setTimeout(getClasses,expressBuffer)});
+        return <Link className='link'
+            to={(currentType==='Quest')?'/questForge':'/class'}
+            state={{
+                origin:'inventory',
+                classId:_id,
+                associationList,
+                element:currentElement,
+                field:currentAttribute,
+                type:currentType,
+                classType:name
+            }}>Expand</Link>
     }
 
     const loadClassDetails = (classItem) => {
@@ -643,36 +657,117 @@ function ClassGallery() {
         })
 
     }
+
+    const loadClassSpecificDetails = (classItem) => {
+        if (currentType !== ('Quest')) {return;}
+
+        return <button onClick={(e) => {
+                classItem.status = 1;
+                updateClass(classItem)
+                e.target.parentElement.style.visibility = 'hidden'   
+            }}>Prime</button>
+    }
+
+    const renderClasses = () => {
+        setTimeout(() => {
+            if (currentType === 'Quest') {
+                getQuests();
+            } else {
+                getClasses();}
+        },expressBuffer)
+    }
+
+    const updateClassField = () => {
+        draggedClass.element = currentElement;
+        draggedClass.field = currentAttribute;
+
+        axios.patch(URL+(currentType==='Quest'?'quests/updateMeta':'classes/update'), draggedClass)
+            .then(renderClasses);
+    }
+
+    const updateClassType = () => {
+        draggedClass.type = currentType;
+
+        axios.patch(URL+'classes/update', draggedClass)
+            .then(renderClasses);
+    }
+
+    const updateClass = (classItem) => {
+        axios.patch(URL+(currentType==='Quest'?'quests/updateMeta':'classes/update'), classItem)
+            .then(renderClasses);
+    }
+
+    const deleteClass = (classItem) => {
+        if (currentType==='Quest') {console.log('deleting quest')}
+
+        axios.delete(URL+(currentType==='Quest'?'quests':'classes')+'/delete/'+classItem._id)
+            .then(renderClasses);
+    }
     
     const loadAddClass = () => {
         return <div id={'add'}
             key={'class-_add'}
             className='card'
             onClick={() => {
-                const newClass = {
-                    element:currentElement,
-                    field:currentAttribute,
-                    type:currentType,
-                    name:'New Class',
-                    associationList:[],
-                    details: {},
-                    picture_URL:'',
-                    description:'Description'
+
+                if (currentType==='Quest') {console.log('adding quest')}
+                
+                let newClass = '';
+                
+                if (currentType==='Quest') {
+                    newClass = {
+                        element:currentElement,
+                        field:currentAttribute,
+                        name: 'New Quest',
+                        details: {},
+                        picture_URL:'',
+                        description:'Description',
+                        status: 0,
+                        priority: 3,
+                        series: [
+                            {
+                                function:'Begin Adventure',
+                                deadline:null,
+                                complete:false
+                            },{
+                                function:'Complete Adventure',
+                                deadline:null,
+                                complete:false
+                            }
+                        ]
+                    }
+                } else {
+                    newClass = {
+                        element:currentElement,
+                        field:currentAttribute,
+                        type:currentType,
+                        name:'New Class',
+                        details: {},
+                        picture_URL:'',
+                        description:'Description',
+                        associationList:[],
+                    }       
                 }
 
-                axios.post(URL+'classes/add', newClass)
-                .then(() => {setTimeout(getClasses,expressBuffer)});
-            }}
+                axios.post(URL+(currentType==='Quest'?'quests':'classes')+'/add', newClass)
+                    .then(renderClasses);
+                }}
             >
             {'+'}
         </div>
     }
 
     return ( <>
-        <Link to='/spaces'>Spaces</Link>
+        <div id='frame-div'
+        style={{top:'0vh',width:'5vh'}}>
+            <Link to='/spaces'>Spaces</Link>
+            <Link id='back'to={'/'}>Back</Link>
+        </div>
         {elementNavbar()}
         {fieldNavbar()}
         <div id='container'>
+
+
             {loadClasses()}
             {loadAddClass()}
         </div>
@@ -680,4 +775,4 @@ function ClassGallery() {
     </>);
 }
  
-export default ClassGallery;
+export default Inventory;

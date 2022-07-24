@@ -122,6 +122,14 @@ function Inventory() {
                         "professional": "Lawyer",
                         "fantastic": "?",
                         "description": ""
+                    },
+                    {
+                        "attribute": "Courage",
+                        "anatomic": "?",
+                        "mythological": "Anubis",
+                        "professional": "Lawyer",
+                        "fantastic": "?",
+                        "description": ""
                     }
                 ]
             },

@@ -13,7 +13,7 @@ function EntityGallery() {
     let {associationList} = location.state;
 
     // const URL = 'http://localhost:3001/';
-    const URL = 'https://blueprint-forge-server.herokuapp.com/';
+    const URL = 'https://embryonia-server.herokuapp.com/';
     const expressBuffer = 25;
 
     const [entities, updateEntities] = useState(() => {return []})

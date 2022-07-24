@@ -4,6 +4,7 @@ import Nexus from './components/nexus';
 import Inventory from './components/inventory';
 import QuestFeed from './components/quest.feed';
 import QuestForge from './components/quest.forge';
+import EntityGallery from './components/entity.gallery';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Routes>
             <Route path='/' element={<Nexus />} />
             <Route path='/inventory' element={<Inventory />} />
+            <Route path='/class' element={<EntityGallery />} />
             <Route path='/quests' element={<QuestFeed />} />
             <Route path='/questForge' element={<QuestForge />} />
               

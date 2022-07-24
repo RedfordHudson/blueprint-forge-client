@@ -155,7 +155,7 @@ function EntityGallery() {
 
             <div id='frame-div'>
                 <Link className='back frame'
-                    to={'/'}
+                    to={'/inventory'}
                     state={{
                         element,
                         field,

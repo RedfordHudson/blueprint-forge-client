@@ -65,8 +65,8 @@ function QuestFeed() {
             total += 1;
 
             if (node.function === undefined) { // source is Array -> conjunction
-                node.forEach((series) => {
-                    const progress = countProgress(series);
+                node.parallel.forEach((node) => {
+                    const progress = countProgress(node.series);
                     total += progress[0];
                     completed += progress[1];
                     current = current.concat(progress[2]);
